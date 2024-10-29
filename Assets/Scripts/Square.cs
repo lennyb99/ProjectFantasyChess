@@ -5,6 +5,7 @@ using UnityEngine;
 public class Square : MonoBehaviour
 {
     private bool isActive;
+    public string pieceType;
 
     public Sprite activeFieldSpriteBright;
     public Sprite activeFieldSpriteDark;
@@ -24,7 +25,9 @@ public class Square : MonoBehaviour
     public Sprite blackRook;
     public Sprite blackQueen;
     public Sprite blackKing;
-    
+
+    public int file;
+    public int row;
 
     public SpriteRenderer pieceOnSquareRenderer;
 
@@ -59,7 +62,8 @@ public class Square : MonoBehaviour
 
     public void ChangeSquareOccupation(string pieceType)
     {
-        switch(pieceType)
+        this.pieceType = pieceType;
+        switch (pieceType)
         {
             case "whitePawn":
                 pieceOnSquareRenderer.sprite = whitePawn;
