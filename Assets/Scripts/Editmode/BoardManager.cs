@@ -71,7 +71,6 @@ public class BoardManager : MonoBehaviour
             Square square = squareObject.GetComponent<Square>();
 
             squareOccupations.Add((square.file, square.row), (square.isActive, square.pieceType));
-            Debug.Log("xxxxxxx: "+square.pieceType);
         }
         BoardLayout boardLayout = new BoardLayout(fileCount, rowCount, squareOccupations);
         GameData.SetBoardLayout(boardLayout);
