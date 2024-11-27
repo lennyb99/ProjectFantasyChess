@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PlaySquare : MonoBehaviour
 {
-    
-
-
+    public int file;
+    public int rank;
 }

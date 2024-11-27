@@ -21,8 +21,6 @@ public class BoardManager : MonoBehaviour
         AssignSquareCoordinates();
     }
 
-
-
     // Update is called once per frame
     void Update()
     {
@@ -72,9 +70,10 @@ public class BoardManager : MonoBehaviour
 
             squareOccupations.Add((square.file, square.row), (square.isActive, square.pieceType));
         }
-        BoardLayout boardLayout = new BoardLayout(fileCount, rowCount, squareOccupations);
+        BoardLayout boardLayout = new BoardLayout(fileCount, rowCount, squareOccupations, true);
         GameData.SetBoardLayout(boardLayout);
     }
+
     public void test()
     {
         Debug.Log("test");
