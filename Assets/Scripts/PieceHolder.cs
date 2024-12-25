@@ -22,6 +22,8 @@ public class PieceHolder : MonoBehaviour
     public GameObject whiteKing;
     public GameObject blackKing;
 
+    public Sprite whiteSquareTexture;
+    public Sprite blackSquareTexture;
    
     public GameObject GetPiece(string pieceName)
     {

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8054209545265653146}
   - component: {fileID: 8356109964219584472}
   - component: {fileID: 3789127150357900908}
-  - component: {fileID: 576682165001388104}
+  - component: {fileID: -4156831429188183724}
   m_Layer: 0
   m_Name: WhiteRook
   m_TagString: Piece
@@ -74,7 +74,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -58617687
   m_SortingLayer: 2
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 295d4d2d1de53c746a509868d26fca13, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -131,7 +131,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.49623966, y: 0.49720582}
   m_EdgeRadius: 0
---- !u!114 &576682165001388104
+--- !u!114 &-4156831429188183724
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -140,6 +140,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 8242061046015019330}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2230ba42c932675449e9aaace52ac7d1, type: 3}
+  m_Script: {fileID: 11500000, guid: ecf94d9f779a6cd46b33d202f9bf0cd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isWhite: 1
+  physicalPosition: {fileID: 0}
+  currentSquare: {fileID: 0}
+  pieceType: 2

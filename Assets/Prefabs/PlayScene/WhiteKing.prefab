@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1179481924382213302}
   - component: {fileID: 3740190378969309867}
   - component: {fileID: 3500482567587871369}
-  - component: {fileID: 4788933168165785160}
+  - component: {fileID: -6324612902040329705}
   m_Layer: 0
   m_Name: WhiteKing
   m_TagString: Piece
@@ -74,7 +74,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -58617687
   m_SortingLayer: 2
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 97bdf38e04b2afd4ea0e4d0c37f667d2, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -131,7 +131,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.49623966, y: 0.49720582}
   m_EdgeRadius: 0
---- !u!114 &4788933168165785160
+--- !u!114 &-6324612902040329705
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -140,6 +140,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1878289013570524463}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 18b8ec0478108254a8c5ec6a2285f264, type: 3}
+  m_Script: {fileID: 11500000, guid: ecf94d9f779a6cd46b33d202f9bf0cd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isWhite: 1
+  physicalPosition: {fileID: 0}
+  currentSquare: {fileID: 0}
+  pieceType: 0

@@ -2,17 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Rook : MonoBehaviour
+public static class Rook 
 {
-    // Start is called before the first frame update
-    void Start()
+    public static bool CheckMoveIntegrity(Move newMove)
     {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+
+        return false;
     }
 }

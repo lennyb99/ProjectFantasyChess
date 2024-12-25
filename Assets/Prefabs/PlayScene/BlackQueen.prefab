@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3443688393033202167}
   - component: {fileID: 7751238820555743257}
   - component: {fileID: 5243745183965978648}
-  - component: {fileID: 3671903277579761532}
+  - component: {fileID: 4996151171545087312}
   m_Layer: 0
   m_Name: BlackQueen
   m_TagString: Piece
@@ -74,7 +74,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -58617687
   m_SortingLayer: 2
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: ddb8024c7300dc74891f84b006fdd4f7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -131,7 +131,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.49623966, y: 0.49720582}
   m_EdgeRadius: 0
---- !u!114 &3671903277579761532
+--- !u!114 &4996151171545087312
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -140,6 +140,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 5082120251355438196}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05b23b4b4ec978247bb9bd0cc30c49e5, type: 3}
+  m_Script: {fileID: 11500000, guid: ecf94d9f779a6cd46b33d202f9bf0cd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isWhite: 0
+  physicalPosition: {fileID: 0}
+  currentSquare: {fileID: 0}
+  pieceType: 1

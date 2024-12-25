@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6736613910559115586}
   - component: {fileID: 4953705360003539370}
   - component: {fileID: 5128127861420825184}
-  - component: {fileID: 720810547987471684}
+  - component: {fileID: 5836783118735392028}
   m_Layer: 0
   m_Name: BlackBishop
   m_TagString: Piece
@@ -74,7 +74,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -58617687
   m_SortingLayer: 2
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: fa1079e8627ab5145bcda55b3942b9d3, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -131,7 +131,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.49623966, y: 0.49720582}
   m_EdgeRadius: 0
---- !u!114 &720810547987471684
+--- !u!114 &5836783118735392028
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -140,7 +140,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 99733727894529845}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec1c4a005e132274da808c70dfee8f66, type: 3}
+  m_Script: {fileID: 11500000, guid: ecf94d9f779a6cd46b33d202f9bf0cd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   isWhite: 0
+  physicalPosition: {fileID: 0}
+  currentSquare: {fileID: 0}
+  pieceType: 3

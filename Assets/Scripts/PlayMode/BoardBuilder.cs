@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class BoardBuilder : MonoBehaviour
@@ -10,6 +12,7 @@ public class BoardBuilder : MonoBehaviour
 
     public PieceHolder pieceHolder;
 
+    int DebugCount = 0;
 
     private void Start()
     {
@@ -48,17 +51,41 @@ public class BoardBuilder : MonoBehaviour
                 Vector3 spawnPosition = new Vector3(pair.Key.Item1 *1.0f, pair.Key.Item2 * 1.0f, 0);
 
                 if (pair.Value.Item1) { 
-                    InitializeSquare(pair.Key.Item1, pair.Key.Item2, boardLayout.whitePov);
-                    InitializePiece(pair.Key.Item1, pair.Key.Item2, boardLayout.whitePov, pair.Value.Item2);
+                    GameObject square = InitializeAndReturnSquare(pair.Key.Item1, pair.Key.Item2, boardLayout.whitePov);
+                    GameObject piece = InitializeAndReturnPiece(pair.Key.Item1, pair.Key.Item2, boardLayout.whitePov, pair.Value.Item2);
+
+                    if (piece != null) { 
+                    piece.GetComponent<Piece>().SetCurrentSquare(square.GetComponent<PlaySquare>());
+                    piece.GetComponent<Piece>().SyncPiecePositionToCurrentSquare();
+                    }
                 }
             }
+            SetupSquareNeighborLinks();
+            SetTexturesForSquares();
+        }
+    }
+    
+    private void SetupSquareNeighborLinks()
+    {
+        foreach(GameObject square in squares)
+        {
+            square.GetComponent<PlaySquare>().AssignAdjacentSquares();
         }
     }
 
-    private void InitializeSquare(int file, int rank, bool whitePov)
+    private GameObject InitializeAndReturnSquare(int file, int rank, bool whitePov)
     {
         GameObject square = Instantiate(squarePrefab, CreateVectorPosition(file, rank, whitePov), Quaternion.identity);
+        square.name = "square" + DebugCount;
+        DebugCount++;
+
+        square.GetComponent<PlaySquare>().file = file;
+        square.GetComponent<PlaySquare>().rank = rank;
+        square.GetComponent<PlaySquare>().board = this;
+
         squares.Add(square);
+
+        return square;
     }
 
     /*
@@ -77,17 +104,55 @@ public class BoardBuilder : MonoBehaviour
         
     }
 
-    private void InitializePiece(int file, int rank, bool whitePov, string name)
+    private GameObject InitializeAndReturnPiece(int file, int rank, bool whitePov, string name)
     {
         GameObject piecePrefab = pieceHolder.GetPiece(name);
-        Debug.Log(name);
         if (piecePrefab == null)
         {
             Debug.Log("Piece couldnt be retrieved from Piece Holder");
-            return;
+            return null;
         }
         GameObject piece = Instantiate(piecePrefab, CreateVectorPosition(file, rank, whitePov), Quaternion.identity);
-        pieces.Add(piece); 
+        pieces.Add(piece);
+
+        return piece;
+    }
+
+    private void SetTexturesForSquares()
+    {
+        foreach (GameObject square in squares)
+        {
+            SpriteRenderer spriteRen = square.GetComponent<SpriteRenderer>();
+            if (square.GetComponent<PlaySquare>() != null)
+            {
+                if(square.GetComponent<PlaySquare>().file % 2 == 0)
+                {
+                    if(square.GetComponent<PlaySquare>().rank % 2 == 0)
+                    {
+                        // black
+                        spriteRen.sprite = pieceHolder.blackSquareTexture;
+                    }
+                    else
+                    {
+                        // white
+                        spriteRen.sprite = pieceHolder.whiteSquareTexture;
+                    }
+                }
+                else
+                {
+                    if (square.GetComponent<PlaySquare>().rank % 2 == 0)
+                    {
+                        // white
+                        spriteRen.sprite = pieceHolder.whiteSquareTexture;
+                    }
+                    else
+                    {
+                        // black
+                        spriteRen.sprite = pieceHolder.blackSquareTexture;
+                    }
+                }
+            }
+        }
     }
 
     private GameObject CreatePiece()
@@ -95,5 +160,23 @@ public class BoardBuilder : MonoBehaviour
         GameObject piece = new GameObject();
 
         return null;
+    }
+
+
+    /*
+     * Function to provide a certain square in the list of squares that are present.
+     * returns null if no square is found
+     */
+    public PlaySquare FindSquareByCoordinates(int file, int rank)
+    {
+        foreach (GameObject square in squares)
+        {
+            if (square.GetComponent<PlaySquare>().file == file && square.GetComponent<PlaySquare>().rank == rank)
+            {
+                return square.GetComponent<PlaySquare>();
+            }
+        }
+        return null;
+
     }
 }
