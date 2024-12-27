@@ -7,35 +7,77 @@ public class GameManager : MonoBehaviour
     private List<Move> moves = new List<Move>();
 
 
-    public bool RequestMove(Move newMove)
+    public void RequestMove(Move newMove)
     {
-        Debug.Log(newMove.originSquare.name + newMove.destinationSquare.name + newMove.movedPiece.name);
-
-
         // Check if values of Move Object are valid
-        if (newMove.originSquare == null || newMove.destinationSquare == null || newMove.movedPiece == null)
-        {
-            return false;
-        }
+        ValidateMoveRequest(newMove);
 
         // Check if movement of pieceType is corresponding with its rules
-        Rook.CheckMoveIntegrity(newMove);
+        if (!CheckMoveIntegrity(newMove))
+        {
+            Debug.Log("Move is not permitted");
+            newMove.movedPiece.ResetPhysicalPosition();
+            return;
+        }
 
         // Check if upcoming position is valid:
         // king didnt put himself in check
-
         
+        ExecuteMoveOnBoard(newMove);
+        Debug.Log("Move is permitted");
+    }
+
+    private void ExecuteMoveOnBoard(Move newMove)
+    {
+        // Delete beaten piece from destination Square
+        if(newMove.destinationSquare.currentPiece != null) { 
+            Destroy(newMove.destinationSquare.currentPiece.gameObject);
+        }
+
+        // Reset memory of old square
+        newMove.originSquare.SetCurrentPiece(null);
+
+        // Update memory of piece
+        newMove.movedPiece.SetCurrentSquare(newMove.destinationSquare);
+
+        // Update memory of new square
+        newMove.destinationSquare.SetCurrentPiece(newMove.movedPiece);
+
+        // Actual movement of the physical representation of the peace to its square
+        newMove.movedPiece.SyncPiecePositionToCurrentSquare();
+    }
+
+    private bool CheckMoveIntegrity(Move newMove)
+    {
+        switch (newMove.movedPiece.pieceType) {
+            case PieceType.rook:
+                if (Rook.CheckMoveIntegrity(newMove))
+                {
+                    return true;
+                }
+                break;
+        
+        
+        }
         return false;
     }
 
-    public void RegisterMove(Move newMove)
+    private void ValidateMoveRequest(Move newMove)
+    {
+        if (newMove.originSquare == null || newMove.destinationSquare == null || newMove.movedPiece == null)
+        {
+            return;
+        }
+        Debug.Log(newMove.movedPiece.name + " requests move: " + newMove.originSquare.file + "-" + newMove.originSquare.rank + "...to..." + newMove.destinationSquare.file + "-" + newMove.destinationSquare.rank);
+    }
+
+    private void RegisterMove(Move newMove)
     {
         moves.Add(newMove);
     }
 
-   
-
 }
+
 
 
 public class Move

@@ -18,20 +18,73 @@ public class BoardBuilder : MonoBehaviour
     {
         squares = new List<GameObject>();
 
+        //Standard chess board setup
         Dictionary<(int, int), (bool, string)> debugDict = new Dictionary<(int, int), (bool, string)>
         {
             { (1,1),(true,"whiteRook") },
-            { (1,2),(true,"blackPawn") },
-            { (1,3),(true,"blackRook") },
-            { (2,1),(true,"whiteQueen") },
+            { (1,2),(true,"whitePawn") },
+            { (1,3),(true,"") },
+            { (1,4),(true,"") },
+            { (1,5),(true,"") },
+            { (1,6),(true,"") },
+            { (1,7),(true,"blackPawn") },
+            { (1,8),(true,"blackRook") },
+            { (2,1),(true,"whiteKnight") },
             { (2,2),(true,"whitePawn") },
-            { (2,3),(true,"blackQueen") },
-            { (3,1),(true,"whiteKing") },
-            { (3,2),(true,"blackPawn") },
-            { (3,3),(true,"blackKing") },
-            { (4,1),(true,"whiteRook") },
+            { (2,3),(true,"") },
+            { (2,4),(true,"") },
+            { (2,5),(true,"") },
+            { (2,6),(true,"") },
+            { (2,7),(true,"blackPawn") },
+            { (2,8),(true,"blackKnight") },
+            { (3,1),(true,"whiteBishop") },
+            { (3,2),(true,"whitePawn") },
+            { (3,3),(true,"") },
+            { (3,4),(true,"") },
+            { (3,5),(true,"") },
+            { (3,6),(true,"") },
+            { (3,7),(true,"blackPawn") },
+            { (3,8),(true,"blackBishop") },
+            { (4,1),(true,"whiteQueen") },
             { (4,2),(true,"whitePawn") },
-            { (4,3),(true,"blackBishop") },
+            { (4,3),(true,"") },
+            { (4,4),(true,"whiteRook") },
+            { (4,5),(true,"blackRook") },
+            { (4,6),(true,"") },
+            { (4,7),(true,"blackPawn") },
+            { (4,8),(true,"blackQueen") },
+            { (5,1),(true,"whiteKing") },
+            { (5,2),(true,"whitePawn") },
+            { (5,3),(true,"") },
+            { (5,4),(true,"") },
+            { (5,5),(true,"") },
+            { (5,6),(true,"") },
+            { (5,7),(true,"blackPawn") },
+            { (5,8),(true,"blackKing") },
+            { (6,1),(true,"whiteBishop") },
+            { (6,2),(true,"whitePawn") },
+            { (6,3),(true,"") },
+            { (6,4),(true,"") },
+            { (6,5),(true,"") },
+            { (6,6),(true,"") },
+            { (6,7),(true,"blackPawn") },
+            { (6,8),(true,"blackBishop") },
+            { (7,1),(true,"whiteKnight") },
+            { (7,2),(true,"whitePawn") },
+            { (7,3),(true,"") },
+            { (7,4),(true,"") },
+            { (7,5),(true,"") },
+            { (7,6),(true,"") },
+            { (7,7),(true,"blackPawn") },
+            { (7,8),(true,"blackKnight") },
+            { (8,1),(true,"whiteRook") },
+            { (8,2),(true,"whitePawn") },
+            { (8,3),(true,"") },
+            { (8,4),(true,"") },
+            { (8,5),(true,"") },
+            { (8,6),(true,"") },
+            { (8,7),(true,"blackPawn") },
+            { (8,8),(true,"blackRook") },
         };
         BoardLayout debugLayout = new BoardLayout(3, 4, debugDict, true);
         BuildBoard(debugLayout);
@@ -55,8 +108,9 @@ public class BoardBuilder : MonoBehaviour
                     GameObject piece = InitializeAndReturnPiece(pair.Key.Item1, pair.Key.Item2, boardLayout.whitePov, pair.Value.Item2);
 
                     if (piece != null) { 
-                    piece.GetComponent<Piece>().SetCurrentSquare(square.GetComponent<PlaySquare>());
-                    piece.GetComponent<Piece>().SyncPiecePositionToCurrentSquare();
+                        piece.GetComponent<Piece>().SetCurrentSquare(square.GetComponent<PlaySquare>());
+                        square.GetComponent<PlaySquare>().SetCurrentPiece(piece.GetComponent<Piece>());
+                        piece.GetComponent<Piece>().SyncPiecePositionToCurrentSquare();
                     }
                 }
             }
@@ -109,7 +163,6 @@ public class BoardBuilder : MonoBehaviour
         GameObject piecePrefab = pieceHolder.GetPiece(name);
         if (piecePrefab == null)
         {
-            Debug.Log("Piece couldnt be retrieved from Piece Holder");
             return null;
         }
         GameObject piece = Instantiate(piecePrefab, CreateVectorPosition(file, rank, whitePov), Quaternion.identity);

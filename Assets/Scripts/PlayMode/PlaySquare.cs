@@ -22,6 +22,11 @@ public class PlaySquare : MonoBehaviour
 
     public Piece currentPiece;
 
+    public void SetCurrentPiece(Piece piece)
+    {
+        currentPiece = piece;
+    }
+
     public void AssignAdjacentSquares()
     {
         topLeft = board.FindSquareByCoordinates(file-1, rank+1);

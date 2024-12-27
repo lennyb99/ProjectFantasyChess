@@ -20,7 +20,6 @@ public class PlayerManager : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log("click detect");
             DetectLeftMouseClick();
         }
 
@@ -43,7 +42,6 @@ public class PlayerManager : MonoBehaviour
             if (hit.collider != null && hit.collider.gameObject.CompareTag("Piece"))
             {
                 selectedObject = hit.collider.gameObject;
-                Debug.Log(selectedObject.gameObject.name + " selected");
                 return;
             }
         }
@@ -90,11 +88,8 @@ public class PlayerManager : MonoBehaviour
 
     private void RequestMove(PlaySquare oriSquareObj, PlaySquare destSquareObj, GameObject pieceObj)
     {
-        if (pieceObj.GetComponent<Piece>() != null) { 
-            if(!gameManager.RequestMove(new Move(oriSquareObj, destSquareObj, pieceObj.GetComponent<Piece>())))
-            {
-                pieceObj.GetComponent<Piece>().ResetPhysicalPosition();
-            }              
+        if (pieceObj.GetComponent<Piece>() != null) {
+            gameManager.RequestMove(new Move(oriSquareObj, destSquareObj, pieceObj.GetComponent<Piece>()));
         }
     }
 }

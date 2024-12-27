@@ -53,6 +53,8 @@ public class PieceHolder : MonoBehaviour
                 return whiteKing;
             case "blackKing":
                 return blackKing;
+            case "":
+                return null;
             default:
                 Debug.Log("couldnt find '" + pieceName + "'.");
                 return null;
