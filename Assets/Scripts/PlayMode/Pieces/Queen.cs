@@ -16,8 +16,8 @@ public class Queen : MonoBehaviour
 
     private static List<PlaySquare> GetAllPossibleQueenMovesFromSquare(Piece movedPiece, PlaySquare currentSquare)
     {
-        List<PlaySquare> possibleFields = new List<PlaySquare>();
-        PlaySquare tempCheckField = currentSquare; // This initially stores the position of the rook.
+        List<PlaySquare> possibleSquares = new List<PlaySquare>();
+        PlaySquare tempCheckSquare = currentSquare; // This initially stores the position of the rook.
 
         List<Func<PlaySquare, PlaySquare>> directions = new List<Func<PlaySquare, PlaySquare>>
         {
@@ -33,9 +33,9 @@ public class Queen : MonoBehaviour
 
         foreach (var direction in directions)
         {
-            PieceMovement.GetAllFieldsTowardsDirection(movedPiece, direction, tempCheckField, possibleFields);
-            tempCheckField = currentSquare;
+            PieceMovement.GetAllFieldsTowardsDirection(movedPiece, direction, tempCheckSquare, possibleSquares);
+            tempCheckSquare = currentSquare;
         }
-        return possibleFields;
+        return possibleSquares;
     }
 }

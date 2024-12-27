@@ -117,7 +117,16 @@ public class BoardBuilder : MonoBehaviour
             SetupSquareNeighborLinks();
             SetTexturesForSquares();
             SendBoardDataToGameBoardData();
+            SendPawnRuleData();
         }
+    }
+
+    private void SendPawnRuleData()
+    {
+        GameBoardData.blackPawnBaseRank = 7;
+        GameBoardData.whitePawnBaseRank = 2;
+        GameBoardData.blackPawnPromotionRank = 1;
+        GameBoardData.whitePawnPromotionRank = 8;
     }
 
     private void SendBoardDataToGameBoardData()

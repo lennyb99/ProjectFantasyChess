@@ -12,23 +12,34 @@ public class PlayerManager : MonoBehaviour
     private GameObject selectedObject;
     private Vector3 offset;
 
+    public bool allowPieceMovements;
+
     void Start()
     {
+        allowPieceMovements = true;
     }
 
     void Update()
+    {
+        if (allowPieceMovements)
+        {
+            CheckForPieceMovements();
+        }
+    }
+
+    private void CheckForPieceMovements()
     {
         if (Input.GetMouseButtonDown(0))
         {
             DetectLeftMouseClick();
         }
 
-        if (Input.GetMouseButton(0) && selectedObject != null) 
+        if (Input.GetMouseButton(0) && selectedObject != null)
         {
             DragObject();
         }
 
-        if (Input.GetMouseButtonUp(0) && selectedObject != null) 
+        if (Input.GetMouseButtonUp(0) && selectedObject != null)
         {
             DropObject();
         }

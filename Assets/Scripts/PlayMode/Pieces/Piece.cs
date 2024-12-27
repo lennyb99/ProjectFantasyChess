@@ -15,16 +15,15 @@ public class Piece : MonoBehaviour
 {
     public bool isWhite;
     public Transform physicalPosition;
-    //public int file;
-    //public int rank;
     public PlaySquare currentSquare;
+    public int moveCount; // Stores information on how many times this piece was moved in the game
 
     public PieceType pieceType;
     
     // Start is called before the first frame update
     void Start()
     {
-        
+        moveCount = 0;
     }
 
     // Update is called once per frame
