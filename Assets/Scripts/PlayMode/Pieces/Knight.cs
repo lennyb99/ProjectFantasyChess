@@ -4,15 +4,64 @@ using UnityEngine;
 
 public class Knight : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public static bool CheckMoveIntegrity(Move newMove)
     {
-        
+        if (GetAllPossibleKnightMovesFromSquare(newMove.movedPiece, newMove.originSquare).Contains(newMove.destinationSquare))
+        {
+            return true;
+        }
+        return false;
     }
 
-    // Update is called once per frame
-    void Update()
+
+
+    private static List<PlaySquare> GetAllPossibleKnightMovesFromSquare(Piece movedPiece, PlaySquare currentSquare)
     {
-        
+        List<PlaySquare> possibleFields = new List<PlaySquare>();
+
+        int file = currentSquare.file;
+        int rank = currentSquare.rank;
+
+        List<(int, int)> destinationSquareCoordinates = new List<(int, int)>
+        {
+            // 1 clock 
+            (file + 1, rank + 2),
+            // 2 clock
+            (file + 2, rank + 1),
+            // 4 clock
+            (file + 2, rank - 1),
+            // 5 clock
+            (file + 1, rank - 2),
+            // 7 clock
+            (file - 1, rank - 2),
+            // 8 clock
+            (file - 2, rank - 1),
+            // 10 clock
+            (file - 2, rank + 1),
+            // 11 clock
+            (file - 1, rank + 2),
+        };
+
+
+        foreach (var pair in destinationSquareCoordinates)
+        {
+            if (GameBoardData.FindSquareByCoordinates(pair.Item1, pair.Item2) != null)
+            {
+                PlaySquare square = GameBoardData.FindSquareByCoordinates(pair.Item1, pair.Item2);
+                if (square.currentPiece == null)
+                {
+                    possibleFields.Add(square);
+                }
+                else
+                {
+                    if (PieceMovement.IsFieldWithTargetPieceTakeable(movedPiece, square.currentPiece))
+                    {
+                        possibleFields.Add(square); // Add Square to the possible destination squares of the rook
+                    }
+                }
+            }
+        }
+
+        return possibleFields;
     }
 }

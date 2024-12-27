@@ -56,8 +56,26 @@ public class GameManager : MonoBehaviour
                     return true;
                 }
                 break;
-        
-        
+            case PieceType.bishop:
+                if (Bishop.CheckMoveIntegrity(newMove))
+                {
+                    return true;
+                }
+                break;
+            case PieceType.queen:
+                if (Queen.CheckMoveIntegrity(newMove))
+                {
+                    return true;
+                }
+                break;
+            case PieceType.knight:
+                if (Knight.CheckMoveIntegrity(newMove))
+                {
+                    return true;
+                }
+                break;
+
+
         }
         return false;
     }

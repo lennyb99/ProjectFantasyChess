@@ -49,7 +49,7 @@ public class BoardBuilder : MonoBehaviour
             { (4,2),(true,"whitePawn") },
             { (4,3),(true,"") },
             { (4,4),(true,"whiteRook") },
-            { (4,5),(true,"blackRook") },
+            { (4,5),(true,"blackBishop") },
             { (4,6),(true,"") },
             { (4,7),(true,"blackPawn") },
             { (4,8),(true,"blackQueen") },
@@ -116,7 +116,14 @@ public class BoardBuilder : MonoBehaviour
             }
             SetupSquareNeighborLinks();
             SetTexturesForSquares();
+            SendBoardDataToGameBoardData();
         }
+    }
+
+    private void SendBoardDataToGameBoardData()
+    {
+        GameBoardData.squares = this.squares;
+        GameBoardData.pieces = this.pieces;
     }
     
     private void SetupSquareNeighborLinks()
@@ -230,6 +237,5 @@ public class BoardBuilder : MonoBehaviour
             }
         }
         return null;
-
     }
 }
