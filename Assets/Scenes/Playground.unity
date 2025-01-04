@@ -243,6 +243,7 @@ MonoBehaviour:
   bishopButton: {fileID: 608266521}
   knightButton: {fileID: 2066300221}
   playerManager: {fileID: 780795427}
+  gameManager: {fileID: 494460199}
 --- !u!1 &380853791
 GameObject:
   m_ObjectHideFlags: 0
@@ -425,6 +426,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pieceHolder: {fileID: 961001365}
   canvas: {fileID: 18429245}
+  promotionPieceName: 
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -1362,7 +1364,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1753068642
 RectTransform:
   m_ObjectHideFlags: 0

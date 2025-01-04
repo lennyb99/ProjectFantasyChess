@@ -17,14 +17,14 @@ public static class PieceMovement
         {
             PlaySquare nextField = getNextField(tempCheckField);
 
-            if (nextField.currentPiece == null)
+            if (nextField.GetCurrentPiece() == null)
             {
                 possibleFields.Add(nextField);
                 tempCheckField = nextField;
                 continue;
             }
 
-            Piece piece = nextField.currentPiece; // Stores reference to the piece on the viewed square
+            Piece piece = nextField.GetCurrentPiece(); // Stores reference to the piece on the viewed square
             if (IsFieldWithTargetPieceTakeable(movingPiece,piece))
             {
                 possibleFields.Add(nextField); // Add Square to the possible destination squares 
@@ -57,6 +57,10 @@ public static class PieceMovement
 
     //       }
     //   }
+
+
+    
+
 
     /*
      * Support function to reduce redundancy

@@ -19,17 +19,28 @@ public class Piece : MonoBehaviour
     public int moveCount; // Stores information on how many times this piece was moved in the game
 
     public PieceType pieceType;
+
+    public List<PlaySquare> guardedSquares;
     
     // Start is called before the first frame update
     void Start()
     {
         moveCount = 0;
+        guardedSquares = new List<PlaySquare>();
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    public void OnDestroy()
+    {
+        foreach (PlaySquare square in guardedSquares)
+        {
+            square.UnsubscribeAsGuardingPiece(this);
+        }
     }
 
     public void SetCurrentSquare(PlaySquare playSquare)
@@ -53,10 +64,79 @@ public class Piece : MonoBehaviour
         physicalPosition = newTransform;
     }
 
+    public bool CheckingEnemyKing(Piece enemyKing)
+    {
+        switch (pieceType)
+        {
+            case PieceType.king:
+
+                break;
+            case PieceType.queen:
+
+                break;
+            case PieceType.knight:
+
+                break;
+            case PieceType.rook:
+
+                break;
+            case PieceType.bishop:
+
+                break;
+            case PieceType.pawn:
+
+                break;
+
+        }
+        return false;
+    }
+
     
     public void ResetPhysicalPosition()
     {
         transform.position = new Vector3(physicalPosition.position.x, physicalPosition.position.y, physicalPosition.position.z);
     }
 
+    public void CalibrateGuardedSquares()
+    {
+        guardedSquares.Clear();
+
+        // Let guarded squares be calculated
+        switch (pieceType)
+        {
+            case PieceType.king:
+
+                break;
+            case PieceType.queen:
+
+                break;
+            case PieceType.knight:
+
+                break;
+            case PieceType.rook:
+
+                break;
+            case PieceType.bishop:
+
+                break;
+            case PieceType.pawn:
+
+                break;
+        }
+            
+
+
+        // notify squares
+        SubscribeToGuardedSquares();
+    }
+
+    private void SubscribeToGuardedSquares()
+    {
+        foreach(PlaySquare square in guardedSquares)
+        {
+            square.SubscribeAsGuardingPiece(this);
+        }
+    }
+
+    
 }

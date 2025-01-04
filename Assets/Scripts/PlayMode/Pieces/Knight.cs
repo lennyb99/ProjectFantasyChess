@@ -48,13 +48,13 @@ public class Knight : MonoBehaviour
             if (GameBoardData.FindSquareByCoordinates(pair.Item1, pair.Item2) != null)
             {
                 PlaySquare square = GameBoardData.FindSquareByCoordinates(pair.Item1, pair.Item2);
-                if (square.currentPiece == null)
+                if (square.GetCurrentPiece() == null)
                 {
                     possibleFields.Add(square);
                 }
                 else
                 {
-                    if (PieceMovement.IsFieldWithTargetPieceTakeable(movedPiece, square.currentPiece))
+                    if (PieceMovement.IsFieldWithTargetPieceTakeable(movedPiece, square.GetCurrentPiece()))
                     {
                         possibleFields.Add(square); // Add Square to the possible destination squares of the rook
                     }

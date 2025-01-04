@@ -30,24 +30,24 @@ public static class Pawn
         if (rank == GameBoardData.whitePawnBaseRank && //checks if pawn is allowed to push two ranks from its position
             currentSquare.topMid != null &&  //checks if squares infront of it exist
             currentSquare.topMid.topMid != null &&
-            currentSquare.topMid.currentPiece == null && //checks if squares in front of it are empty
-            currentSquare.topMid.topMid.currentPiece == null)
+            currentSquare.topMid.GetCurrentPiece() == null && //checks if squares in front of it are empty
+            currentSquare.topMid.topMid.GetCurrentPiece() == null)
         {
             possibleSquares.Add(currentSquare.topMid.topMid);
         }
 
         // one square forward
         if (currentSquare.topMid != null && 
-            currentSquare.topMid.currentPiece == null)
+            currentSquare.topMid.GetCurrentPiece() == null)
         {
             possibleSquares.Add(currentSquare.topMid);
         }
 
         // diagonal left
         if (currentSquare.topLeft != null &&
-            currentSquare.topLeft.currentPiece != null)
+            currentSquare.topLeft.GetCurrentPiece() != null)
         {
-            if(PieceMovement.IsFieldWithTargetPieceTakeable(movedPiece, currentSquare.topLeft.currentPiece))
+            if(PieceMovement.IsFieldWithTargetPieceTakeable(movedPiece, currentSquare.topLeft.GetCurrentPiece()))
             {
                 possibleSquares.Add(currentSquare.topLeft);
             }   
@@ -55,9 +55,9 @@ public static class Pawn
 
         // diagonal right
         if (currentSquare.topRight != null &&
-            currentSquare.topRight.currentPiece != null)
+            currentSquare.topRight.GetCurrentPiece() != null)
         {
-            if (PieceMovement.IsFieldWithTargetPieceTakeable(movedPiece, currentSquare.topRight.currentPiece))
+            if (PieceMovement.IsFieldWithTargetPieceTakeable(movedPiece, currentSquare.topRight.GetCurrentPiece()))
             {
                 possibleSquares.Add(currentSquare.topRight);
             }
@@ -67,20 +67,20 @@ public static class Pawn
         // will be checked by looking at the piece on the square next to it.
         // If its a pawn of the opposite color and it made a two step movement on the last move, en passant is possible.
         if (currentSquare.midLeft != null &&
-            currentSquare.midLeft.currentPiece != null &&
-            currentSquare.midLeft.currentPiece.pieceType == PieceType.pawn && 
-            !currentSquare.midLeft.currentPiece.isWhite && 
-            currentSquare.midLeft.currentPiece == GameBoardData.GetLastMove().movedPiece &&
+            currentSquare.midLeft.GetCurrentPiece() != null &&
+            currentSquare.midLeft.GetCurrentPiece().pieceType == PieceType.pawn && 
+            !currentSquare.midLeft.GetCurrentPiece().isWhite && 
+            currentSquare.midLeft.GetCurrentPiece() == GameBoardData.GetLastMove().movedPiece &&
             GameBoardData.GetLastMove().originSquare.rank - GameBoardData.GetLastMove().destinationSquare.rank == 2)
         {
             possibleSquares.Add(currentSquare.topLeft);
         }
 
         if (currentSquare.midRight != null &&
-            currentSquare.midRight.currentPiece != null &&
-            currentSquare.midRight.currentPiece.pieceType == PieceType.pawn &&
-            !currentSquare.midRight.currentPiece.isWhite &&
-            currentSquare.midRight.currentPiece == GameBoardData.GetLastMove().movedPiece &&
+            currentSquare.midRight.GetCurrentPiece() != null &&
+            currentSquare.midRight.GetCurrentPiece().pieceType == PieceType.pawn &&
+            !currentSquare.midRight.GetCurrentPiece().isWhite &&
+            currentSquare.midRight.GetCurrentPiece() == GameBoardData.GetLastMove().movedPiece &&
             GameBoardData.GetLastMove().originSquare.rank - GameBoardData.GetLastMove().destinationSquare.rank == 2)
         {
             possibleSquares.Add(currentSquare.topRight);
@@ -98,24 +98,24 @@ public static class Pawn
         if (rank == GameBoardData.blackPawnBaseRank && //checks if pawn is allowed to push two ranks from its position
             currentSquare.bottomMid != null &&  //checks if squares infront of it exist
             currentSquare.bottomMid.bottomMid != null &&
-            currentSquare.bottomMid.currentPiece == null && //checks if squares in front of it are empty
-            currentSquare.bottomMid.bottomMid.currentPiece == null)
+            currentSquare.bottomMid.GetCurrentPiece() == null && //checks if squares in front of it are empty
+            currentSquare.bottomMid.bottomMid.GetCurrentPiece() == null)
         {
             possibleSquares.Add(currentSquare.bottomMid.bottomMid);
         }
 
         // one square forward
         if (currentSquare.bottomMid != null &&
-            currentSquare.bottomMid.currentPiece == null)
+            currentSquare.bottomMid.GetCurrentPiece() == null)
         {
             possibleSquares.Add(currentSquare.bottomMid);
         }
 
         // diagonal left
         if (currentSquare.bottomLeft != null &&
-            currentSquare.bottomLeft.currentPiece != null)
+            currentSquare.bottomLeft.GetCurrentPiece() != null)
         {
-            if (PieceMovement.IsFieldWithTargetPieceTakeable(movedPiece, currentSquare.bottomLeft.currentPiece))
+            if (PieceMovement.IsFieldWithTargetPieceTakeable(movedPiece, currentSquare.bottomLeft.GetCurrentPiece()))
             {
                 possibleSquares.Add(currentSquare.bottomLeft);
             }
@@ -123,9 +123,9 @@ public static class Pawn
 
         // diagonal right
         if (currentSquare.bottomRight != null &&
-            currentSquare.bottomRight.currentPiece != null)
+            currentSquare.bottomRight.GetCurrentPiece() != null)
         {
-            if (PieceMovement.IsFieldWithTargetPieceTakeable(movedPiece, currentSquare.bottomRight.currentPiece))
+            if (PieceMovement.IsFieldWithTargetPieceTakeable(movedPiece, currentSquare.bottomRight.GetCurrentPiece()))
             {
                 possibleSquares.Add(currentSquare.bottomRight);
             }
@@ -135,20 +135,20 @@ public static class Pawn
         // will be checked by looking at the piece on the square next to it.
         // If its a pawn of the opposite color and it made a two step movement on the last move, en passant is possible.
         if (currentSquare.midLeft != null &&
-            currentSquare.midLeft.currentPiece != null &&
-            currentSquare.midLeft.currentPiece.pieceType == PieceType.pawn &&
-            currentSquare.midLeft.currentPiece.isWhite &&
-            currentSquare.midLeft.currentPiece == GameBoardData.GetLastMove().movedPiece &&
+            currentSquare.midLeft.GetCurrentPiece() != null &&
+            currentSquare.midLeft.GetCurrentPiece().pieceType == PieceType.pawn &&
+            currentSquare.midLeft.GetCurrentPiece().isWhite &&
+            currentSquare.midLeft.GetCurrentPiece() == GameBoardData.GetLastMove().movedPiece &&
             GameBoardData.GetLastMove().originSquare.rank - GameBoardData.GetLastMove().destinationSquare.rank == -2)
         {
             possibleSquares.Add(currentSquare.bottomLeft);
         }
 
         if (currentSquare.midRight != null &&
-            currentSquare.midRight.currentPiece != null &&
-            currentSquare.midRight.currentPiece.pieceType == PieceType.pawn &&
-            currentSquare.midRight.currentPiece.isWhite &&
-            currentSquare.midRight.currentPiece == GameBoardData.GetLastMove().movedPiece &&
+            currentSquare.midRight.GetCurrentPiece() != null &&
+            currentSquare.midRight.GetCurrentPiece().pieceType == PieceType.pawn &&
+            currentSquare.midRight.GetCurrentPiece().isWhite &&
+            currentSquare.midRight.GetCurrentPiece() == GameBoardData.GetLastMove().movedPiece &&
             GameBoardData.GetLastMove().originSquare.rank - GameBoardData.GetLastMove().destinationSquare.rank == -2)
         {
             possibleSquares.Add(currentSquare.bottomRight);

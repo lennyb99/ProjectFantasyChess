@@ -20,12 +20,50 @@ public class PlaySquare : MonoBehaviour
 
     public BoardBuilder board;
 
-    public Piece currentPiece;
+    [SerializeField]
+    private Piece currentPiece;
+    
 
+    private List<Piece> guardingPieces = new List<Piece>();
+
+
+    public Piece GetCurrentPiece()
+    {
+        return currentPiece;
+    }
     public void SetCurrentPiece(Piece piece)
     {
-        currentPiece = piece;
+        if(piece != null) { 
+            currentPiece = piece;
+            UpdateAllGuardingPieces();
+        }
+        else
+        {
+            currentPiece = null;
+        }
     }
+
+    public void UpdateAllGuardingPieces()
+    {
+        foreach (Piece piece in guardingPieces)
+        {
+            piece.CalibrateGuardedSquares();
+        }
+    }
+
+    public void SubscribeAsGuardingPiece(Piece piece)
+    {
+        if(!guardingPieces.Contains(piece))
+        {
+            guardingPieces.Add(piece);
+        } 
+    }
+
+    public void UnsubscribeAsGuardingPiece(Piece piece)
+    {
+        guardingPieces.Remove(piece);
+    }
+    
 
     public void AssignAdjacentSquares()
     {
