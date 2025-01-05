@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -37,6 +38,7 @@ public class Piece : MonoBehaviour
 
     public void OnDestroy()
     {
+        GameBoardData.pieces.Remove(this.gameObject);
         foreach (PlaySquare square in guardedSquares)
         {
             square.UnsubscribeAsGuardingPiece(this);
@@ -95,6 +97,52 @@ public class Piece : MonoBehaviour
     public void ResetPhysicalPosition()
     {
         transform.position = new Vector3(physicalPosition.position.x, physicalPosition.position.y, physicalPosition.position.z);
+    }
+
+    public List<Move> GetAllPossibleMoves()
+    {
+        List<Move> possibleMoves = new List<Move>();
+
+        List<PlaySquare> destinationSquares = new List<PlaySquare>();
+        switch (pieceType)
+        {
+            case PieceType.king:
+                destinationSquares.AddRange(King.GetAllPossibleKingMovesFromSquare(this, currentSquare, false));
+                break;
+            case PieceType.queen:
+                destinationSquares.AddRange(Queen.GetAllPossibleQueenMovesFromSquare(this, currentSquare));
+                break;
+            case PieceType.knight:
+                destinationSquares.AddRange(Knight.GetAllPossibleKnightMovesFromSquare(this, currentSquare));
+                break;
+            case PieceType.rook:
+                destinationSquares.AddRange(Rook.GetAllPossibleRookMovesFromSquare(this, currentSquare));
+                break;
+            case PieceType.bishop:
+                destinationSquares.AddRange(Bishop.GetAllPossibleBishopMovesFromSquare(this, currentSquare));
+                break;
+            case PieceType.pawn:
+                if (isWhite) { 
+                    destinationSquares.AddRange(Pawn.GetAllPossibleWhitePawnMovesFromSquare(this, currentSquare));
+                }
+                else
+                {
+                    destinationSquares.AddRange(Pawn.GetAllPossibleBlackPawnMovesFromSquare(this, currentSquare));
+                }
+                break;
+        }
+
+        foreach (PlaySquare destSquare in destinationSquares)
+        {
+            possibleMoves.Add(new Move(currentSquare, destSquare, this));
+        }
+
+        return possibleMoves;
+    }
+
+    private void GetAllPossibleMovesFromSinglePiece(Func<List<PlaySquare>> staticMethod)
+    {
+        staticMethod();
     }
 
     public void CalibrateGuardedSquares()

@@ -70,7 +70,7 @@ public class BoardManager : MonoBehaviour
 
             squareOccupations.Add((square.file, square.row), (square.isActive, square.pieceType));
         }
-        BoardLayout boardLayout = new BoardLayout(fileCount, rowCount, squareOccupations, true);
+        BoardLayout boardLayout = new BoardLayout(fileCount, rowCount, squareOccupations, true, true);
         GameData.SetBoardLayout(boardLayout);
     }
 

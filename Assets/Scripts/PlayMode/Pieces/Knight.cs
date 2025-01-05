@@ -15,7 +15,7 @@ public class Knight : MonoBehaviour
 
 
 
-    private static List<PlaySquare> GetAllPossibleKnightMovesFromSquare(Piece movedPiece, PlaySquare currentSquare)
+    public static List<PlaySquare> GetAllPossibleKnightMovesFromSquare(Piece movedPiece, PlaySquare currentSquare)
     {
         List<PlaySquare> possibleFields = new List<PlaySquare>();
 

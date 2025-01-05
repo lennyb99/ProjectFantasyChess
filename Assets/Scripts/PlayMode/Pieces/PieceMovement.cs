@@ -33,33 +33,12 @@ public static class PieceMovement
         }
     }
 
-    //   /*
-    //* Support function to check for diagonal movements, eg. bishop, rook, queen
-    //*/
-    //   public static void GetAllGuardedFieldsTowardsDirection(Func<Field, Field> getNextField, Field currentField, List<Field> possibleFields)
-    //   {
-    //       Field tempCheckField = currentField; // Resets position to current position
-    //       while (getNextField(tempCheckField) != null)
-    //       {
-    //           Field nextField = getNextField(tempCheckField);
-
-    //           possibleFields.Add(nextField);
-    //           tempCheckField = nextField;
-
-    //           if (nextField.GetCurrentGameObject() != null)
-    //           {
-    //               possibleFields.Add(nextField);
-    //               break;
-    //           }
-
-
-    //           //possibleFields.Add(nextField); // Add Square to the possible destination squares 
-
-    //       }
-    //   }
-
-
-    
+    public static int CalculateDistanceBetweenSquares(PlaySquare squareOne, PlaySquare squareTwo)
+    {
+        int deltaX = Math.Abs(squareOne.file - squareTwo.file);
+        int deltaY = Math.Abs(squareOne.rank - squareTwo.rank);
+        return Math.Max(deltaX, deltaY);
+    }
 
 
     /*

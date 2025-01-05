@@ -14,7 +14,7 @@ public static class Bishop
         return false;
     }
 
-    private static List<PlaySquare> GetAllPossibleBishopMovesFromSquare(Piece movedPiece, PlaySquare currentSquare)
+    public static List<PlaySquare> GetAllPossibleBishopMovesFromSquare(Piece movedPiece, PlaySquare currentSquare)
     {
         List<PlaySquare> possibleFields = new List<PlaySquare>();
         PlaySquare tempCheckField = currentSquare; // This initially stores the position of the rook.

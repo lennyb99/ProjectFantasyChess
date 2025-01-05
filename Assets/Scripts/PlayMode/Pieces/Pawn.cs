@@ -21,7 +21,7 @@ public static class Pawn
         return false;
     }
 
-    private static List<PlaySquare> GetAllPossibleWhitePawnMovesFromSquare(Piece movedPiece, PlaySquare currentSquare)
+    public static List<PlaySquare> GetAllPossibleWhitePawnMovesFromSquare(Piece movedPiece, PlaySquare currentSquare)
     {
         List<PlaySquare> possibleSquares = new List<PlaySquare>();
         int rank = currentSquare.rank;
@@ -89,7 +89,7 @@ public static class Pawn
         return possibleSquares;
     }
 
-    private static List<PlaySquare> GetAllPossibleBlackPawnMovesFromSquare(Piece movedPiece, PlaySquare currentSquare)
+    public static List<PlaySquare> GetAllPossibleBlackPawnMovesFromSquare(Piece movedPiece, PlaySquare currentSquare)
     {
         List<PlaySquare> possibleSquares = new List<PlaySquare>();
         int rank = currentSquare.rank;

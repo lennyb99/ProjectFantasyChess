@@ -1,14 +1,21 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using UnityEngine;
 
 public static class King
 {
+    public static bool castlingFlag = false;
+
     public static bool CheckMoveIntegrity(Move newMove)
     {
-        if (GetAllPossibleKingMovesFromSquare(newMove.movedPiece, newMove.originSquare).Contains(newMove.destinationSquare))
+        if (GetAllPossibleKingMovesFromSquare(newMove.movedPiece, newMove.originSquare, true).Contains(newMove.destinationSquare))
         {
+            if(PieceMovement.CalculateDistanceBetweenSquares(newMove.originSquare, newMove.destinationSquare) > 1)
+            {
+                castlingFlag = true;
+            }
             return true;
         }
         return false;
@@ -16,15 +23,15 @@ public static class King
 
 
 
-    private static List<PlaySquare> GetAllPossibleKingMovesFromSquare(Piece movedPiece, PlaySquare currentSquare)
+    public static List<PlaySquare> GetAllPossibleKingMovesFromSquare(Piece movedPiece, PlaySquare currentSquare, bool castlingIncluded)
     {
         List<PlaySquare> possibleFields = new List<PlaySquare>();
 
         int file = currentSquare.file;
         int rank = currentSquare.rank;
 
-        if(movedPiece.moveCount == 0) { 
-            IsCastlingPossible(movedPiece, currentSquare, possibleFields);
+        if(movedPiece.moveCount == 0 && castlingIncluded) { 
+            CalculateCastlingMoves(movedPiece, currentSquare, possibleFields);
         }
 
         
@@ -156,7 +163,7 @@ public static class King
     public static bool IsKingInCheck(Piece king)
     {
         List<Piece> piecesThatLookAtKing = GetPiecesThatLookAtSquare(king.currentSquare);
-        
+
         for (int i = piecesThatLookAtKing.Count - 1; i >= 0; i--)
         {
             // filter pieces out, that have same color as the king
@@ -177,13 +184,13 @@ public static class King
             }
         }
 
-        if(piecesThatLookAtKing.Count > 0)
+        if (piecesThatLookAtKing.Count > 0)
         {
-            Debug.Log("King is in check by " + piecesThatLookAtKing.Count + " pieces.");
+            //Debug.Log("King is in check by " + piecesThatLookAtKing.Count + " pieces.");
             return true;
         }
         else {
-            Debug.Log("King is not in check");
+            //Debug.Log("King is not in check");
             return false;
         }
 
@@ -210,7 +217,28 @@ public static class King
         return false;
     }
 
-    private static List<Piece> GetPiecesThatLookAtSquare(PlaySquare square)
+    private static bool IsEnemyPawnLookingAtSquare(Piece pawn, PlaySquare square, bool whiteKing)
+    {
+        if (whiteKing)
+        {
+            if (square.topRight == pawn.currentSquare ||
+                square.topLeft == pawn.currentSquare)
+            {
+                return true;
+            }
+        }
+        else
+        {
+            if (square.bottomRight == pawn.currentSquare ||
+                square.bottomLeft == pawn.currentSquare)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static List<Piece> GetPiecesThatLookAtSquare(PlaySquare square, bool calculateForCastling = false, bool calculateForWhiteKing=false)
     {
         List<Piece> piecesThatLookAtSquare = new List<Piece>();
 
@@ -272,6 +300,29 @@ public static class King
 
         // Check for Knights
         piecesThatLookAtSquare.AddRange(GetKnightsThatLookAtSquareFromDirection(square));
+
+
+        if (calculateForCastling) { 
+            for (int i = piecesThatLookAtSquare.Count - 1; i >= 0; i--)
+            {
+                // filter pieces out, that have same color as the king
+                if (piecesThatLookAtSquare[i].isWhite == calculateForWhiteKing)
+                {
+                    piecesThatLookAtSquare.RemoveAt(i);
+                    continue;
+                }
+
+                // filter pawns out that look in the wrong direction
+                // this has to be done, because the previous method only checks if its a diagonal movement with a distance of 1
+                if (piecesThatLookAtSquare[i].pieceType == PieceType.pawn)
+                {
+                    if (!IsEnemyPawnLookingAtSquare(piecesThatLookAtSquare[i], square, calculateForWhiteKing))
+                    {
+                        piecesThatLookAtSquare.RemoveAt(i);
+                    }
+                }
+            }
+        }
 
         return piecesThatLookAtSquare;
     }
@@ -344,13 +395,16 @@ public static class King
         return knights;
     }
 
-    private static void IsCastlingPossible(Piece movedPiece, PlaySquare currentSquare, List<PlaySquare> possibleFields)
+    private static void CalculateCastlingMoves(Piece movedPiece, PlaySquare currentSquare, List<PlaySquare> possibleFields)
     {
         PlaySquare tempSquare = currentSquare;
         while (tempSquare.midRight != null)
         {
             if (tempSquare.midRight.GetCurrentPiece() == null) // Clear way
             {
+                if(GetPiecesThatLookAtSquare(tempSquare.midRight, calculateForCastling: true, calculateForWhiteKing: movedPiece.isWhite).Count > 0) {
+                    break;
+                }
                 tempSquare = tempSquare.midRight;
                 continue;
             }
@@ -372,6 +426,10 @@ public static class King
         {
             if (tempSquare.midLeft.GetCurrentPiece() == null) // Clear way
             {
+                if (GetPiecesThatLookAtSquare(tempSquare.midLeft, calculateForCastling: true, calculateForWhiteKing: movedPiece.isWhite).Count > 0)
+                {
+                    break;
+                }
                 tempSquare = tempSquare.midLeft;
             }
             else if (tempSquare.midLeft.GetCurrentPiece().pieceType == PieceType.rook && // Rook available for castling

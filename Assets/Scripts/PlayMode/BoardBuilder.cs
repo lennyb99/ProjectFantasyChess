@@ -48,8 +48,8 @@ public class BoardBuilder : MonoBehaviour
             { (4,1),(true,"whiteQueen") },
             { (4,2),(true,"whitePawn") },
             { (4,3),(true,"") },
-            { (4,4),(true,"whiteRook") },
-            { (4,5),(true,"blackBishop") },
+            { (4,4),(true,"") },
+            { (4,5),(true,"") },
             { (4,6),(true,"") },
             { (4,7),(true,"blackPawn") },
             { (4,8),(true,"blackQueen") },
@@ -86,7 +86,7 @@ public class BoardBuilder : MonoBehaviour
             { (8,7),(true,"blackPawn") },
             { (8,8),(true,"blackRook") },
         };
-        BoardLayout debugLayout = new BoardLayout(3, 4, debugDict, true);
+        BoardLayout debugLayout = new BoardLayout(3, 4, debugDict, true, true);
         BuildBoard(debugLayout);
         
         //buildBoard(GameData.GetBoardLayout());
@@ -116,7 +116,7 @@ public class BoardBuilder : MonoBehaviour
             }
             SetupSquareNeighborLinks();
             SetTexturesForSquares();
-            SendBoardDataToGameBoardData();
+            SendBoardDataToGameBoardData(boardLayout);
             SendPawnRuleData();
         }
     }
@@ -129,10 +129,11 @@ public class BoardBuilder : MonoBehaviour
         GameBoardData.whitePawnPromotionRank = 8;
     }
 
-    private void SendBoardDataToGameBoardData()
+    private void SendBoardDataToGameBoardData(BoardLayout bl)
     {
         GameBoardData.squares = this.squares;
         GameBoardData.pieces = this.pieces;
+        GameBoardData.whiteToMove = bl.whiteToMove;
     }
     
     private void SetupSquareNeighborLinks()

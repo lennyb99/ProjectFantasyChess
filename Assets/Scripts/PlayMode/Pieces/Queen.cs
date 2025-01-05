@@ -14,7 +14,7 @@ public class Queen : MonoBehaviour
         return false;
     }
 
-    private static List<PlaySquare> GetAllPossibleQueenMovesFromSquare(Piece movedPiece, PlaySquare currentSquare)
+    public static List<PlaySquare> GetAllPossibleQueenMovesFromSquare(Piece movedPiece, PlaySquare currentSquare)
     {
         List<PlaySquare> possibleSquares = new List<PlaySquare>();
         PlaySquare tempCheckSquare = currentSquare; // This initially stores the position of the rook.

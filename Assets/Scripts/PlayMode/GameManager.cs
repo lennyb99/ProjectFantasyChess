@@ -21,6 +21,12 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        if (!CheckForCorrectTurn(newMove))
+        {
+            newMove.movedPiece.ResetPhysicalPosition();
+            return;
+        }
+
         // Pre-check for checks. this checks if a move that is supposed to be made, would result in an opponent checking the king, therefore its illegal
         if (DoesMovePutOwnKingInCheck(newMove))
         {
@@ -46,15 +52,29 @@ public class GameManager : MonoBehaviour
             ExecuteMoveOnBoard(newMove);
         }
 
+        HandleCastling(newMove);
+
         RegisterMove(newMove);
         Debug.Log("Move is permitted");
 
         // Post-check for checks
+        if (DoesMovePutEnemyKingInCheck(newMove))
+        {
+            // Handle Check 
+
+            // Check for Checkmate
+            if (IsCheckmate(newMove))
+            {
+                // Handle Checkmate
+                Debug.Log("CHECKMATE DETECTED");
+            }
+        }
 
         Debug.Log("----");
         Debug.Log("----");
         Debug.Log("----");
     }
+
 
     private Piece FindKing(bool white)
     {
@@ -95,8 +115,48 @@ public class GameManager : MonoBehaviour
         newMove.originSquare.SetCurrentPiece(newMove.movedPiece);
         newMove.movedPiece.SetCurrentSquare(newMove.originSquare);
 
-        Debug.Log(checkFlag.ToString());
         return checkFlag;
+    }
+
+    private bool DoesMovePutEnemyKingInCheck(Move newMove)
+    {
+        if (King.IsKingInCheck(FindKing(!newMove.movedPiece.isWhite)))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private bool IsCheckmate(Move newMove)
+    {
+        Debug.Log("detection start");
+        bool whiteKingInCheck = !newMove.movedPiece.isWhite; // to know for which king checkmate should be detected
+        Debug.Log(GameBoardData.pieces.Count);
+        foreach (GameObject pieceObj in GameBoardData.pieces)
+        {
+            if (pieceObj != null && pieceObj.GetComponent<Piece>().isWhite == whiteKingInCheck)
+            {
+                List<Move> possibleMoves = pieceObj.GetComponent<Piece>().GetAllPossibleMoves();
+
+                foreach(Move move in possibleMoves)
+                {
+                    if (DoesMovePreventCheckmate(move))
+                    {
+                        Debug.Log("detection finished early");
+                        Debug.Log(move.movedPiece.gameObject.name + move.destinationSquare.gameObject.name + move.originSquare.gameObject.name);
+                        return false;
+                    }
+                }
+            }
+        }
+
+        Debug.Log("detection finished");
+        return true;
+    }
+
+    private bool DoesMovePreventCheckmate(Move simulatedMove)
+    {
+        return !DoesMovePutOwnKingInCheck(simulatedMove);
     }
 
     private void ExecuteMoveOnBoard(Move newMove)
@@ -167,6 +227,7 @@ public class GameManager : MonoBehaviour
         // Delete beaten piece from destination Square
         if (newMove.destinationSquare.GetCurrentPiece() != null)
         {
+            GameBoardData.pieces.Remove(newMove.destinationSquare.GetCurrentPiece().gameObject);
             Destroy(newMove.destinationSquare.GetCurrentPiece().gameObject);
         }
 
@@ -248,6 +309,37 @@ public class GameManager : MonoBehaviour
         canvas.ClosePromotionPanel();
     }
 
+
+    private void HandleCastling(Move newMove)
+    {
+        if (King.castlingFlag)
+        {
+            Move rookMove = null;
+            Debug.Log(newMove.movedPiece.currentSquare);
+            if(newMove.movedPiece.currentSquare.midRight.GetCurrentPiece() != null &&
+                newMove.movedPiece.currentSquare.midRight.GetCurrentPiece().pieceType == PieceType.rook)
+            {
+                rookMove = new Move(newMove.movedPiece.currentSquare.midRight,
+                                    newMove.movedPiece.currentSquare.midLeft,
+                                    newMove.movedPiece.currentSquare.midRight.GetCurrentPiece());
+                
+            }
+            else if(newMove.movedPiece.currentSquare.midLeft.GetCurrentPiece() != null &&
+                    newMove.movedPiece.currentSquare.midLeft.GetCurrentPiece().pieceType == PieceType.rook)
+            {
+                rookMove = new Move(newMove.movedPiece.currentSquare.midLeft,
+                                    newMove.movedPiece.currentSquare.midRight,
+                                    newMove.movedPiece.currentSquare.midLeft.GetCurrentPiece());
+            }
+
+            if(rookMove != null) { 
+                ExecuteMoveOnBoard(rookMove);
+            }
+        }
+
+        King.castlingFlag = false;
+    }
+
     private bool ValidateMoveRequest(Move newMove)
     {
         if (newMove.originSquare == null || newMove.destinationSquare == null || newMove.movedPiece == null)
@@ -258,9 +350,22 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
+    private bool CheckForCorrectTurn(Move newMove) { 
+        if(newMove.movedPiece.isWhite == GameBoardData.whiteToMove)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+            
+    }
+
     private void RegisterMove(Move newMove)
     {
         GameBoardData.moves.Add(newMove);
+        GameBoardData.whiteToMove = !GameBoardData.whiteToMove;
     }
 
     

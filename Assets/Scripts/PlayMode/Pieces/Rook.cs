@@ -14,7 +14,7 @@ public static class Rook
         return false;
     }
 
-    private static List<PlaySquare> GetAllPossibleRookMovesFromSquare(Piece movedPiece,PlaySquare currentSquare)
+    public static List<PlaySquare> GetAllPossibleRookMovesFromSquare(Piece movedPiece,PlaySquare currentSquare)
     {
         List<PlaySquare> possibleSquares = new List<PlaySquare>();
         PlaySquare tempCheckSquare = currentSquare; // This initially stores the position of the rook.

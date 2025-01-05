@@ -24,12 +24,14 @@ public class BoardLayout
     public int rowCount;
     public Dictionary<(int, int), (bool, string)> squares;
     public bool whitePov;
+    public bool whiteToMove;
 
-    public BoardLayout(int fileCount, int rowCount, Dictionary<(int,int),(bool,string)> squares, bool whitePov)
+    public BoardLayout(int fileCount, int rowCount, Dictionary<(int,int),(bool,string)> squares, bool whitePov, bool whiteToMove)
     {
         this.fileCount = fileCount;
         this.rowCount = rowCount;
         this.squares = squares;
         this.whitePov = whitePov;
+        this.whiteToMove = whiteToMove;
     }
 }
