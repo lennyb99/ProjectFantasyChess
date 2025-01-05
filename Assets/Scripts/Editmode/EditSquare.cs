@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Square : MonoBehaviour
+public class EditSquare : MonoBehaviour
 {
     public bool isActive;
     public string pieceType;
@@ -11,6 +11,8 @@ public class Square : MonoBehaviour
     public Sprite activeFieldSpriteDark;
     public Sprite inactiveFieldSpriteDark;
     public Sprite inactiveFieldSpriteBright;
+
+    public bool darkTheme;
 
     public Sprite whitePawn;
     public Sprite whiteKnight;
@@ -27,7 +29,7 @@ public class Square : MonoBehaviour
     public Sprite blackKing;
 
     public int file;
-    public int row;
+    public int rank;
 
     public SpriteRenderer pieceOnSquareRenderer;
 
@@ -35,10 +37,7 @@ public class Square : MonoBehaviour
 
     public void Start()
     {
-        if(pieceOnSquareRenderer == null || pieceTypeSelectionManager == null)
-        {
-            //Debug.Log("square not correctly initialized");
-        }
+        pieceTypeSelectionManager = PieceTypeSelectionManager.Instance;
     }
 
     public void HandleClickedOn()
@@ -109,8 +108,17 @@ public class Square : MonoBehaviour
     public void SetActive(bool active)
     {
         isActive = active;
+        UpdateColor();    
+    }
 
+    public void SetColorTheme(bool darkTheme)
+    {
+        this.darkTheme = darkTheme;
+        UpdateColor();
+    }
 
+    public void UpdateColor()
+    {
         SpriteRenderer ren = GetComponent<SpriteRenderer>();
         if (ren == null)
         {
@@ -119,11 +127,27 @@ public class Square : MonoBehaviour
         }
         if (isActive)
         {
-            ren.sprite = activeFieldSpriteDark;
+            if (darkTheme)
+            {
+                ren.sprite = activeFieldSpriteDark;
+            }
+            else
+            {
+                ren.sprite = activeFieldSpriteBright;
+            }
+                
         }
         else
         {
-            ren.sprite = inactiveFieldSpriteDark;
+            if (darkTheme)
+            {
+                ren.sprite = inactiveFieldSpriteDark;
+            }
+            else
+            {
+                ren.sprite = inactiveFieldSpriteBright;
+            }
+            
         }
     }
 }

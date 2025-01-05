@@ -86,10 +86,10 @@ public class BoardBuilder : MonoBehaviour
             { (8,7),(true,"blackPawn") },
             { (8,8),(true,"blackRook") },
         };
-        BoardLayout debugLayout = new BoardLayout(3, 4, debugDict, true, true);
-        BuildBoard(debugLayout);
+        //BoardLayout debugLayout = new BoardLayout(3, 4, debugDict, true, true);
+        //BuildBoard(debugLayout);
         
-        //buildBoard(GameData.GetBoardLayout());
+        BuildBoard(GameData.GetBoardLayout());
     }
 
     public void BuildBoard(BoardLayout boardLayout)

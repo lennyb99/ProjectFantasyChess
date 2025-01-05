@@ -30,7 +30,7 @@ public class PlayerController : MonoBehaviour
     {
         if(obj.tag == "Square") { 
             
-            Square square = obj.GetComponent<Square>();
+            EditSquare square = obj.GetComponent<EditSquare>();
 
             if (square == null)
             {

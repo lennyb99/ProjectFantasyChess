@@ -25,6 +25,20 @@ public class PieceTypeSelectionManager : MonoBehaviour
     private List<Button> selectPieceTypeButtons = new List<Button>();
     public string activePieceTypeSelect;
 
+    public static PieceTypeSelectionManager Instance {  get; private set; }
+
+    private void Awake()
+    {
+        if(Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
