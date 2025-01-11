@@ -129,9 +129,7 @@ public class GameManager : MonoBehaviour
 
     private bool IsCheckmate(Move newMove)
     {
-        Debug.Log("detection start");
         bool whiteKingInCheck = !newMove.movedPiece.isWhite; // to know for which king checkmate should be detected
-        Debug.Log(GameBoardData.pieces.Count);
         foreach (GameObject pieceObj in GameBoardData.pieces)
         {
             if (pieceObj != null && pieceObj.GetComponent<Piece>().isWhite == whiteKingInCheck)
@@ -150,7 +148,6 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        Debug.Log("detection finished");
         return true;
     }
 

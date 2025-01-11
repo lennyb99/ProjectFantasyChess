@@ -12,6 +12,6 @@ public class EditManager : MonoBehaviour
     public void Submit()
     {
         boardManager.CreateBoardLayout();
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene("MainMenu");
     }
 }
