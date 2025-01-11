@@ -43,7 +43,14 @@ public class PieceTypeSelectionManager : MonoBehaviour
     void Start()
     {
         RegisterButtons();
+        activePieceTypeSelect = "unselected";
     }
+
+    void Update()
+    {
+        
+    }
+
     private void RegisterButtons()
     {
         selectPieceTypeButtons.Add(whitePawnButton);
@@ -79,87 +86,169 @@ public class PieceTypeSelectionManager : MonoBehaviour
 
     public void SelectWhitePawn()
     {
-        
-        activePieceTypeSelect = "whitePawn";
         UnselectAllColors();
-        AdjustColors(whitePawnButton, Color.green);
+        if (activePieceTypeSelect == "whitePawn")
+        {
+            activePieceTypeSelect = "unselected";
+        }
+        else
+        {
+            activePieceTypeSelect = "whitePawn";
+            AdjustColors(whitePawnButton, Color.green);
+        }
     }
 
     public void SelectBlackPawn()
     {
-        activePieceTypeSelect = "blackPawn";
         UnselectAllColors();
-        AdjustColors(blackPawnButton, Color.green);
+        if (activePieceTypeSelect == "blackPawn")
+        {
+            activePieceTypeSelect = "unselected";
+        }
+        else
+        {
+            activePieceTypeSelect = "blackPawn";
+            AdjustColors(blackPawnButton, Color.green);
+        }
     }
 
     public void SelectWhiteBishop()
     {
-        activePieceTypeSelect = "whiteBishop";
         UnselectAllColors();
-        AdjustColors(whiteBishopButton, Color.green);
+        if (activePieceTypeSelect == "whiteBishop")
+        {
+            activePieceTypeSelect = "unselected";
+        }
+        else
+        {
+            activePieceTypeSelect = "whiteBishop";
+            AdjustColors(whiteBishopButton, Color.green);
+        }
     }
 
     public void SelectBlackBishop()
     {
-        activePieceTypeSelect = "blackBishop";
         UnselectAllColors();
-        AdjustColors(blackBishopButton, Color.green);
+        if (activePieceTypeSelect == "blackBishop")
+        {
+            activePieceTypeSelect = "unselected";
+        }
+        else
+        {
+            activePieceTypeSelect = "blackBishop";
+            AdjustColors(blackBishopButton, Color.green);
+        }
     }
 
     public void SelectWhiteKnight()
     {
-        activePieceTypeSelect = "whiteKnight";
         UnselectAllColors();
-        AdjustColors(whiteKnightButton, Color.green);
+        if (activePieceTypeSelect == "whiteKnight")
+        {
+            activePieceTypeSelect = "unselected";
+        }
+        else
+        {
+            activePieceTypeSelect = "whiteKnight";
+            AdjustColors(whiteKnightButton, Color.green);
+        }
     }
 
     public void SelectBlackKnight()
     {
-        activePieceTypeSelect = "blackKnight";
         UnselectAllColors();
-        AdjustColors(blackKnightButton, Color.green);
+        if (activePieceTypeSelect == "blackKnight")
+        {
+            activePieceTypeSelect = "unselected";
+        }
+        else
+        {
+            activePieceTypeSelect = "blackKnight";
+            AdjustColors(blackKnightButton, Color.green);
+        }
     }
 
     public void SelectWhiteRook()
     {
-        activePieceTypeSelect = "whiteRook";
         UnselectAllColors();
-        AdjustColors(whiteRookButton, Color.green);
+        if (activePieceTypeSelect == "whiteRook")
+        {
+            activePieceTypeSelect = "unselected";
+        }
+        else
+        {
+            activePieceTypeSelect = "whiteRook";
+            AdjustColors(whiteRookButton, Color.green);
+        }
     }
 
     public void SelectBlackRook()
     {
-        activePieceTypeSelect = "blackRook";
         UnselectAllColors();
-        AdjustColors(blackRookButton, Color.green);
+        if (activePieceTypeSelect == "blackRook")
+        {
+            activePieceTypeSelect = "unselected";
+        }
+        else
+        {
+            activePieceTypeSelect = "blackRook";
+            AdjustColors(blackRookButton, Color.green);
+        }
     }
 
     public void SelectWhiteQueen()
     {
-        activePieceTypeSelect = "whiteQueen";
         UnselectAllColors();
-        AdjustColors(whiteQueenButton, Color.green);
+        if (activePieceTypeSelect == " whiteQueen")
+        {
+            activePieceTypeSelect = "unselected";
+        }
+        else
+        {
+            activePieceTypeSelect = "whiteQueen";
+            AdjustColors(whiteQueenButton, Color.green);
+        }
     }
 
     public void SelectBlackQueen()
     {
-        activePieceTypeSelect = "blackQueen";
         UnselectAllColors();
-        AdjustColors(blackQueenButton, Color.green);
+        if (activePieceTypeSelect == "blackQueen")
+        {
+            activePieceTypeSelect = "unselected";
+        }
+        else
+        {
+            activePieceTypeSelect = "blackQueen";
+            AdjustColors(blackQueenButton, Color.green);
+        }
     }
 
     public void SelectWhiteKing()
     {
-        activePieceTypeSelect = "whiteKing";
         UnselectAllColors();
-        AdjustColors(whiteKingButton, Color.green);
+        if (activePieceTypeSelect == "whiteKing")
+        {
+            activePieceTypeSelect = "unselected";
+        }
+        else { 
+            activePieceTypeSelect = "whiteKing";
+            AdjustColors(whiteKingButton, Color.green);
+        }
     }
 
     public void SelectBlackKing()
     {
-        activePieceTypeSelect = "blackKing";
         UnselectAllColors();
-        AdjustColors(blackKingButton, Color.green);
+        if (activePieceTypeSelect == "blackKing")
+        {
+            activePieceTypeSelect = "unselected";
+        }
+        else
+        {
+            activePieceTypeSelect = "blackKing";
+            AdjustColors(blackKingButton, Color.green);
+        }
     }
 
     public void UnselectAll()

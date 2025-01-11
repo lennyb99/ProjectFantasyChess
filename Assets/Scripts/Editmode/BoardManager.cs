@@ -41,7 +41,8 @@ public class BoardManager : MonoBehaviour
         {
             for (int j = 0; j < 50; j++)
             {
-                squares.Add(Instantiate(squarePrefab,new Vector3(i, j , 0), Quaternion.identity, squareCollection.transform));
+                //squares.Add(Instantiate(squarePrefab,new Vector3(i, j , 0), Quaternion.identity, squareCollection.transform));
+                squares.Add(Instantiate(squarePrefab, new Vector3(i+.5f, j+.5f, 0), Quaternion.identity));
             }
         }
     }
@@ -118,6 +119,31 @@ public class BoardManager : MonoBehaviour
 
         //GameData.SetBoardLayout(boardLayout);  OLD WAY
         appManager.AddBoardLayout(boardLayout);
+    }
+
+    public List<GameObject> ReturnMatrixOfSquareObjects(EditSquare firstSquare, EditSquare secondSquare)
+    {
+        List<GameObject> squaresBetweenTargetSquares = new List<GameObject>();
+       
+        foreach (var squareObject in squares)
+        {
+            if(IsValueBetween(firstSquare.file, secondSquare.file, squareObject.GetComponent<EditSquare>().file))
+            {
+                if(IsValueBetween(firstSquare.rank, secondSquare.rank, squareObject.GetComponent<EditSquare>().rank))
+                {
+                    squaresBetweenTargetSquares.Add(squareObject);
+                }
+            }
+        }
+
+        return squaresBetweenTargetSquares;
+    }
+
+    private bool IsValueBetween(int value1, int value2, int checkValue)
+    {
+        int min = Mathf.Min(value1, value2);
+        int max = Mathf.Max(value1, value2);
+        return checkValue >= min && checkValue <= max;
     }
 
     public void test()
