@@ -17,7 +17,7 @@ public static class GameData
     }
 }
 
-
+[System.Serializable]
 public class BoardLayout
 {
     public int fileCount;
@@ -35,3 +35,15 @@ public class BoardLayout
         this.whiteToMove = whiteToMove;
     }
 }
+
+[System.Serializable]
+public class ChallengeSettings
+{
+    public bool whitePov;
+
+    public ChallengeSettings(bool whitePov)
+    {
+        this.whitePov = whitePov;
+    }
+}
+

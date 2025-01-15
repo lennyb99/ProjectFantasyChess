@@ -18,6 +18,11 @@ public class BoardBuilder : MonoBehaviour
     {
         squares = new List<GameObject>();
         BuildBoard(GameData.GetBoardLayout());
+
+        if(GameData.GetBoardLayout() == null)
+        {
+            Debug.Log("No Board selected");
+        }
     }
 
     public void BuildBoard(BoardLayout boardLayout)

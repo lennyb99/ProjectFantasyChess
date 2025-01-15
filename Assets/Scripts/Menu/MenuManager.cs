@@ -17,7 +17,7 @@ public class MenuManager : MonoBehaviour
     public GameObject startMenuPanel;
     public GameObject selectModePanel;
 
-    [Header("Room Panel View")]
+    [Header("Multiplayer screen View")]
     public GameObject multiplayerPanel;
     public TMP_InputField createRoomInput;
     public TMP_InputField findRoomInput;
@@ -25,8 +25,10 @@ public class MenuManager : MonoBehaviour
 
     [Header("Room Panel View")]
     public GameObject roomPanel;
-    public List<TMP_Text> playerPanelTexts;
+    public List<UIPlayerPanel> playerPanels;
     public TMP_Text roomNamePanel;
+
+    
 
     // Start is called before the first frame update
     void Start()
@@ -92,7 +94,13 @@ public class MenuManager : MonoBehaviour
 
     public void SelectStartMatch()
     {
-        if(app.selectedBoardLayout != null) { 
+        multiplayer.SendLobbyStart();
+    }
+
+    public void ExecuteStartMatch()
+    {
+        if (app.selectedBoardLayout != null)
+        {
             GameData.SetBoardLayout(app.selectedBoardLayout);
             SceneManager.LoadScene("Playground");
         }
@@ -120,32 +128,87 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    public void UpdateRoomPanelInformation(List<string> playernames=null, string roomName="default")
+    public void UpdateRoomPanelInformation(string roomName=null)
     {
         if (!roomPanel.activeSelf)
         {
             return;
         }
 
-        if (playernames != null)
-        {
-            for (int i = 0; i < playernames.Count; i++)
-            {
-                playerPanelTexts[i].text = playernames[i];
-            }
-        }
+        
 
         if (roomName != null)
         {
             roomNamePanel.text = roomName;
         }
+
     }
+
+    public void UpdateUIPlayerpanels(List<string> playerid = null)
+    {
+        if (!roomPanel.activeSelf)
+        {
+            return;
+        }
+
+        if (playerid != null)
+        {
+            for (int i = 0; i < playerid.Count; i++)
+            {
+                playerPanels[i].UpdatePlayerID(playerid[i]);
+                playerPanels[i].SetPlayerNumber(i);
+            }
+        }
+    }
+
 
     private void FillDropDown(TMP_Dropdown dropdown, List<string> options)
     {
         dropdown.ClearOptions();
         dropdown.AddOptions(options);
     }
-    
+
+    public List<string> GetAllWhiteUserIds()
+    {
+        List<string> ids = new List<string>();
+        foreach (UIPlayerPanel playerPan in playerPanels)
+        {
+            if (playerPan.isWhite)
+            {
+                ids.Add(playerPan.playerId);
+            }
+        }
+        return ids;
+    }
+
+    public List<string> GetAllBlackUserIds()
+    {
+        List<string> ids = new List<string>();
+        foreach (UIPlayerPanel playerPan in playerPanels)
+        {
+            if (!playerPan.isWhite)
+            {
+                ids.Add(playerPan.playerId);
+            }
+        }
+        return ids;
+    }
+
+    public void ChangeTeamIcon(string id, bool isWhite)
+    {
+        foreach (UIPlayerPanel playerPan in playerPanels)
+        {
+            if (id == playerPan.playerId)
+            {
+                playerPan.ToggleTeamImage();
+            }
+        }
+    }
+
+
+    public bool IsWhitePovSelected()
+    {
+        return playerPanels[0].isWhite;
+    }
     
 }

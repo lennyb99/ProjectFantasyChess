@@ -4,11 +4,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Photon.Realtime;
+using System.Linq;
+using System;
 
 public class MultiplayerManager : MonoBehaviourPunCallbacks
 {
     public MenuManager menuManager;
+    public AppManager appManager;
+
+    public PhotonView roomPhotonView;
     public static MultiplayerManager Instance { get; private set; }
+
+    public int teamnumber;
+
+    private string userId;
 
     private void Awake()
     {
@@ -25,7 +34,7 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     void Start()
     {
-        
+        teamnumber = -1;
     }
 
     // Update is called once per frame
@@ -36,11 +45,15 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
 
     public void StartServerConnection()
     {
+        string uniqueUserId = Guid.NewGuid().ToString();
+        this.userId = uniqueUserId;
+        PhotonNetwork.AuthValues = new AuthenticationValues(uniqueUserId);
+        PhotonNetwork.NickName = $"Player_{uniqueUserId.Substring(0, 5)}";
+
+
         PhotonNetwork.ConnectUsingSettings();
         Debug.Log("Connecting to photon..");
-        if(PhotonNetwork.NickName != null) { 
-            PhotonNetwork.NickName = "hans";
-        }
+        
     }
 
     public override void OnConnectedToMaster()
@@ -50,14 +63,24 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
 
     public void CreateRoom(string roomName)
     {
-        PhotonNetwork.CreateRoom(roomName);
+        RoomOptions roomOptions = new RoomOptions
+        {
+            MaxPlayers = 4,
+            IsVisible = true,
+            IsOpen = true,
+            CleanupCacheOnLeave = true,
+            PublishUserId = true
+        };
+        
+
+        PhotonNetwork.CreateRoom(roomName, roomOptions);
     }
 
     public void FindRoom(string roomName)
     {
         PhotonNetwork.JoinRoom(roomName);
-        Debug.Log("searching for room");
     }
+
 
     public override void OnJoinRoomFailed(short returnCode, string message)
     {
@@ -76,42 +99,88 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
     public override void OnCreatedRoom()
     {
         base.OnCreatedRoom();
-        Debug.Log(PhotonNetwork.CurrentRoom.Name);
-        Debug.Log(RetrievePlayerNamesFromCurrentRoom().Count);
-        menuManager.UpdateRoomPanelInformation(playernames:RetrievePlayerNamesFromCurrentRoom(), roomName:PhotonNetwork.CurrentRoom.Name);
+        menuManager.UpdateRoomPanelInformation(roomName:PhotonNetwork.CurrentRoom.Name);
+        menuManager.UpdateUIPlayerpanels(playerid: RetrievePlayerIDsFromCurrentRoom());
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         base.OnPlayerEnteredRoom(newPlayer);
-        menuManager.UpdateRoomPanelInformation(playernames: RetrievePlayerNamesFromCurrentRoom());
+        menuManager.UpdateUIPlayerpanels(playerid: RetrievePlayerIDsFromCurrentRoom());
+
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         base.OnPlayerLeftRoom(otherPlayer);
-        menuManager.UpdateRoomPanelInformation(playernames: RetrievePlayerNamesFromCurrentRoom());
+        menuManager.UpdateUIPlayerpanels(playerid: RetrievePlayerIDsFromCurrentRoom());
     }
 
-    private List<string> RetrievePlayerNamesFromCurrentRoom()
+    private List<string> RetrievePlayerIDsFromCurrentRoom()
     {
-        List<string> playerNames = new List<string>();
+        List<string> playerIDs = new List<string>();
+
         foreach(var player in PhotonNetwork.CurrentRoom.Players)
         {
+            if(player.Value.UserId == this.userId)
+            {
+                playerIDs.Insert(0,player.Value.UserId);
+            }
+            else
+            {
+                playerIDs.Add(player.Value.UserId);
+            }
             
-            playerNames.Add(player.Value.NickName);
         }
-        return playerNames; 
-    }
 
-    
+        return playerIDs;
+    }
 
     public override void OnJoinedRoom()
     {
         base.OnJoinedRoom();
-        menuManager.UpdateRoomPanelInformation(playernames: RetrievePlayerNamesFromCurrentRoom(), roomName: PhotonNetwork.CurrentRoom.Name.ToString());
+        menuManager.UpdateRoomPanelInformation(roomName: PhotonNetwork.CurrentRoom.Name.ToString());
+        menuManager.UpdateUIPlayerpanels(playerid: RetrievePlayerIDsFromCurrentRoom());
     }
 
+    public void SendLobbyStart()
+    {
+        // Check for Lobby leader
 
+        roomPhotonView.RPC("ReceiveLobbyStart", RpcTarget.All, appManager.GetCurrentSerializedBoardLayout());
+            
+        
+    }
+
+    [PunRPC]
+    public void ReceiveLobbyStart(string serializedBoardLayout)
+    {
+        Debug.Log("starting game..");
+        appManager.SetCurrentBoardLayout(serializedBoardLayout, menuManager.IsWhitePovSelected());
+        menuManager.ExecuteStartMatch();
+    }
+
+    public void SendTeamIconChange(string id, bool isWhite)
+    {
+        roomPhotonView.RPC("ReceiveTeamIconChange", RpcTarget.Others, id, isWhite);
+    }
+
+    [PunRPC]
+    public void ReceiveTeamIconChange(string id, bool isWhite)
+    {
+        menuManager.ChangeTeamIcon(id, isWhite);
+    }
+
+    public string GetPlayernameFromId(string id)
+    {
+        foreach (var player in PhotonNetwork.CurrentRoom.Players)
+        {
+            if (player.Value.UserId == id)
+            {
+                return player.Value.NickName;
+            }
+        }
+        return null;
+    }
 
 }

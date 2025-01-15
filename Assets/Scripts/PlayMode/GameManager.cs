@@ -6,12 +6,29 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    MultiplayerManager multiplayerManager;
+
     public PieceHolder pieceHolder;
     public CanvasManager canvas;
 
     private Piece promotingPawn;
     public string promotionPieceName = "";
     public event Action OnPromotionPieceNameChanged;
+
+    public void Start()
+    {
+        multiplayerManager = MultiplayerManager.Instance;
+    }
+
+    public void QueueOpponentTurn()
+    {
+
+    }
+
+    public void SendTurn()
+    {
+
+    }
 
     public void RequestMove(Move newMove)
     {

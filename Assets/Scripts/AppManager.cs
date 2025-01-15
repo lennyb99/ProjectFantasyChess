@@ -1,6 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
+using Newtonsoft.Json;
+
+
 
 public class AppManager : MonoBehaviour
 {
@@ -8,6 +12,10 @@ public class AppManager : MonoBehaviour
     
 
     public static AppManager Instance { get; private set; }
+
+    public MultiplayerManager multiplayerManager;
+
+    JsonSerializerSettings serializerSettings;
 
     public BoardLayout selectedBoardLayout;
     private int count = 0;
@@ -28,12 +36,28 @@ public class AppManager : MonoBehaviour
     void Start()
     {
         boardLayouts.Add(("default",GenerateStandardChessBoardLayout()));
+        RegisterToMultiplayerManager();
+
+        JsonSerializerSettingInitialization();
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    private void RegisterToMultiplayerManager()
+    {
+        multiplayerManager = GameObject.Find("MultiplayerManager").GetComponent<MultiplayerManager>();
+        if (multiplayerManager != null)
+        {
+            multiplayerManager.appManager = this;
+        }
+        else
+        {
+            Debug.Log("CRITICAL ERROR. Menu Manager not found");
+        }
     }
 
     public void AddBoardLayout(BoardLayout bl)
@@ -44,6 +68,31 @@ public class AppManager : MonoBehaviour
     public void SelectBoardLayout(BoardLayout bl)
     {
         selectedBoardLayout = bl;
+    }
+
+    public string GetCurrentSerializedBoardLayout()
+    {
+        if(selectedBoardLayout != null)
+        {
+            return JsonConvert.SerializeObject(selectedBoardLayout,serializerSettings);
+        }
+        return null;
+    }
+
+    public void SetCurrentBoardLayout(string serializedData, bool whitePov)
+    {
+        BoardLayout newBl = JsonConvert.DeserializeObject<BoardLayout>(serializedData, serializerSettings);
+
+        if (newBl == null)
+        {
+            Debug.Log("Board layout not correctly received");
+            return;
+            
+        }
+
+        newBl.whitePov = whitePov;
+
+        selectedBoardLayout = newBl;
     }
 
     public BoardLayout GetBoardLayout(string name)
@@ -61,6 +110,11 @@ public class AppManager : MonoBehaviour
     public List<(string,BoardLayout)> GetBoardLayouts()
     {
         return boardLayouts;
+    }
+    private void JsonSerializerSettingInitialization()
+    {
+        serializerSettings = new JsonSerializerSettings();
+        serializerSettings.Converters.Add(new ValueTupleKeyDictionaryConverter());
     }
 
     private BoardLayout GenerateStandardChessBoardLayout()
@@ -133,8 +187,67 @@ public class AppManager : MonoBehaviour
             { (8,7),(true,"blackPawn") },
             { (8,8),(true,"blackRook") },
         };
-        BoardLayout debugLayout = new BoardLayout(3, 4, debugDict, true, true);
+        BoardLayout debugLayout = new BoardLayout(3, 4, debugDict, false, true);
 
         return debugLayout;
+    }
+}
+
+public class ValueTupleKeyDictionaryConverter : JsonConverter
+{
+    public override bool CanConvert(Type objectType)
+    {
+        return objectType == typeof(Dictionary<(int, int), (bool, string)>);
+    }
+
+    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+    {
+
+        if (reader.TokenType == JsonToken.Null)
+        {
+            return null;
+        }
+
+        var tempDict = serializer.Deserialize<Dictionary<string, (bool, string)>>(reader);
+        if (tempDict == null)
+        {
+            throw new JsonSerializationException("Deserialized dictionary is null.");
+        }
+
+        var dict = new Dictionary<(int, int), (bool, string)>();
+        foreach (var kvp in tempDict)
+        {
+            if (string.IsNullOrEmpty(kvp.Key))
+            {
+                continue; // Überspringe leere oder ungültige Schlüssel
+            }
+
+            var keyParts = kvp.Key.Trim('(', ')').Split(',');
+            if (keyParts.Length != 2 ||
+                !int.TryParse(keyParts[0], out int x) ||
+                !int.TryParse(keyParts[1], out int y))
+            {
+                throw new JsonSerializationException($"Invalid key format: {kvp.Key}");
+            }
+
+            var key = (x, y);
+            dict[key] = kvp.Value;
+        }
+
+        return dict;
+    }
+
+
+    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    {
+        var dict = (Dictionary<(int, int), (bool, string)>)value;
+        var tempDict = new Dictionary<string, (bool, string)>();
+
+        foreach (var kvp in dict)
+        {
+            tempDict[$"({kvp.Key.Item1}, {kvp.Key.Item2})"] = kvp.Value;
+        }
+
+        serializer.Serialize(writer, tempDict);
     }
 }
