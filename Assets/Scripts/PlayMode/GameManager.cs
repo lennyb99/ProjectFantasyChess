@@ -1,7 +1,9 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -11,27 +13,38 @@ public class GameManager : MonoBehaviour
     public PieceHolder pieceHolder;
     public CanvasManager canvas;
 
+    public bool selectionCompleted = true;
     private Piece promotingPawn;
     public string promotionPieceName = "";
     public event Action OnPromotionPieceNameChanged;
 
+    private TaskCompletionSource<bool> promotionTaskCompletionSource;
+
     public void Start()
     {
         multiplayerManager = MultiplayerManager.Instance;
+
+        RegisterToMultiplayerManager();
     }
 
-    public void QueueOpponentTurn()
+    private void RegisterToMultiplayerManager()
     {
-
+        
+        if (multiplayerManager != null)
+        {
+            multiplayerManager.gameManager = this;
+        }
+        else
+        {
+            Debug.Log("CRITICAL ERROR. Game Manager not found");
+        }
     }
 
-    public void SendTurn()
+    public async void RequestMove(Move newMove)
     {
+        // Collecting information for whether the move was a promoting move and then using that to make a MoveInstruction Object to send.
+        bool promotionMove = false;
 
-    }
-
-    public void RequestMove(Move newMove)
-    {
         // Check if values of Move Object are valid
         if (!ValidateMoveRequest(newMove))
         {
@@ -59,15 +72,19 @@ public class GameManager : MonoBehaviour
             newMove.movedPiece.ResetPhysicalPosition();
             return;
         }
+
+        Debug.Log(GameBoardData.pieces.Count);
+
         
-        if (CheckForPromotion(newMove)) 
-        {
-            InitiatePromotionSequence(newMove);
-        }
-        else 
-        { 
+
+        if (!CheckForPromotion(newMove)) { 
             ExecuteMoveOnBoard(newMove);
         }
+        else
+        {
+            await HandlePromotion(newMove, promotionMove);
+        }
+
 
         HandleCastling(newMove);
 
@@ -87,9 +104,71 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        // Sending move to other players
+        SendMoveToOtherPlayers(newMove, promotionMove);
+
+        // Any class wide data that has been saved to calculate this move specifically
+        ResetMoveInformation();
+
         Debug.Log("----");
         Debug.Log("----");
         Debug.Log("----");
+    }
+
+    private void SendMoveToOtherPlayers(Move move, bool promotionMove)
+    {
+        MoveInstruction moveInstruction = new MoveInstruction();
+
+        moveInstruction = moveInstruction.CreateMoveInformation(move, promotionMove, promotionPieceName);
+
+        multiplayerManager.SendMoveInstruction(moveInstruction.GetSerializedMoveInstruction());
+
+        
+
+        promotionMove = false;
+    }
+
+
+    public void QueueOpponentTurn(string serializedMoveInstruction)
+    {
+        if (serializedMoveInstruction == null)
+        {
+            Debug.Log("Received move is not valid");
+            return;
+        }
+
+        MoveInstruction moveInstruction = MoveInstruction.GetDeserializedMoveInstruction(serializedMoveInstruction);
+
+        PlaySquare psOrigin = GameBoardData.FindSquareByCoordinates(moveInstruction.originSquareFile, moveInstruction.originSquareRank);
+        PlaySquare psDestination = GameBoardData.FindSquareByCoordinates(moveInstruction.destinationSquareFile, moveInstruction.destinationSquareRank);
+
+        if(psOrigin == null || psDestination == null)
+        {
+            Debug.Log("Invalid Square information");
+        }
+
+        ExecuteMoveOnBoard(new Move(psOrigin, psDestination, psOrigin.GetCurrentPiece()));
+
+
+        // If a promotion move was made
+        if (moveInstruction.promotionMove)
+        {
+            // Remove piece from board
+            Destroy(psDestination.GetCurrentPiece().gameObject);
+
+            // Spawn new Piece
+            GameObject piecePrefab = pieceHolder.GetPiece(moveInstruction.promotionPieceType);
+            if (piecePrefab == null)
+            {
+                return;
+            }
+            Piece newPiece = Instantiate(piecePrefab, psDestination.gameObject.transform.position, Quaternion.identity).GetComponent<Piece>();
+
+            // swapping of the square with piece relationship
+            newPiece.currentSquare = psDestination;
+            psDestination.SetCurrentPiece(newPiece);
+            newPiece.SyncPiecePositionToCurrentSquare();
+        }
     }
 
 
@@ -277,21 +356,44 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
+    private async Task HandlePromotion(Move newMove, bool promotionMove)
+    {
+        promotionMove = true;
+        selectionCompleted = false;
+            
+        InitiatePromotionSequence(newMove);
+
+        await WaitForPromotionSelection();
+             
+
+        selectionCompleted = true;
+        PromotePawn(newMove);
+    }
+
+    private Task WaitForPromotionSelection()
+    {
+        promotionTaskCompletionSource = new TaskCompletionSource<bool>();
+
+        canvas.OnPromotionSelected += OnPromotionSelected;
+        return promotionTaskCompletionSource.Task;
+    }
+
+    private void OnPromotionSelected()
+    {
+        canvas.OnPromotionSelected -= OnPromotionSelected;
+        promotionTaskCompletionSource.TrySetResult(true);
+    }
+
     private void InitiatePromotionSequence(Move newMove)
     {
         canvas.OpenPromotingPanel();
-
-        OnPromotionPieceNameChanged = null;
-        OnPromotionPieceNameChanged += () =>
-        {
-            PromotePawn(newMove);
-        };
     }
+
 
     public void SetPromotionPieceName(string name)
     {
         promotionPieceName = name;
-        OnPromotionPieceNameChanged?.Invoke();
+        selectionCompleted = true;
     }
 
     public void PromotePawn(Move newMove)
@@ -310,16 +412,20 @@ public class GameManager : MonoBehaviour
         GameObject piecePrefab = pieceHolder.GetPiece(promotionPieceName);
         if (piecePrefab == null)
         {
+            Debug.Log("error while receiving prefab");
             return;
         }
-        Piece newPiece = Instantiate(piecePrefab, promotingPawn.gameObject.transform.position, Quaternion.identity).GetComponent<Piece>();
+        Piece newPiece = Instantiate(piecePrefab, newMove.destinationSquare.gameObject.transform.position, Quaternion.identity).GetComponent<Piece>();
+        
 
         // swapping of the square with piece relationship
-        newPiece.currentSquare = promotingPawn.currentSquare;
-        promotingPawn.currentSquare.SetCurrentPiece(newPiece);
+        newPiece.SetCurrentSquare(promotingPawn.currentSquare);
+        newMove.destinationSquare.SetCurrentPiece(newPiece);
+
         Destroy(promotingPawn.gameObject);
         promotingPawn = null;
-        promotionPieceName = "";
+        selectionCompleted = false;
+        //promotionPieceName = "";
         canvas.ClosePromotionPanel();
     }
 
@@ -372,8 +478,12 @@ public class GameManager : MonoBehaviour
         else
         {
             return false;
-        }
-            
+        }   
+    }
+
+    private void ResetMoveInformation()
+    {
+        promotionPieceName = "";
     }
 
     private void RegisterMove(Move newMove)
@@ -401,6 +511,42 @@ public class Move
         destinationSquare = destSquare;
         this.movedPiece = movedPiece;
     }
+}
+
+[System.Serializable]
+public class MoveInstruction
+{
+    public int originSquareFile;
+    public int originSquareRank;
+    public int destinationSquareFile;
+    public int destinationSquareRank;
+
+    public bool promotionMove;
+    public string promotionPieceType;
+
+    public MoveInstruction CreateMoveInformation(Move move, bool promotionMove, string promotionPieceType)
+    {
+        originSquareFile = move.originSquare.file;
+        originSquareRank = move.originSquare.rank;
+        destinationSquareFile = move.destinationSquare.file;
+        destinationSquareRank = move.destinationSquare.rank;
+
+        this.promotionMove = promotionMove;
+        this.promotionPieceType = promotionPieceType;
+
+        return this;
+    }
+
+    public string GetSerializedMoveInstruction()
+    {
+        return JsonConvert.SerializeObject(this);
+    }
+
+    public static MoveInstruction GetDeserializedMoveInstruction(string serializedMoveInstruction)
+    {
+        return JsonConvert.DeserializeObject<MoveInstruction>(serializedMoveInstruction);
+    }
+
 }
 
 public class BoardPosition

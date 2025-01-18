@@ -48,6 +48,7 @@ public class Piece : MonoBehaviour
     public void SetCurrentSquare(PlaySquare playSquare)
     {
         currentSquare = playSquare;
+        SyncPiecePositionToCurrentSquare();
     }
 
     public PlaySquare GetCurrentSquare() { return currentSquare; }

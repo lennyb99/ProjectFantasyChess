@@ -58,8 +58,6 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    
-
     public void SelectStartApp()
     {
         SwitchToPanelView(selectModePanel);

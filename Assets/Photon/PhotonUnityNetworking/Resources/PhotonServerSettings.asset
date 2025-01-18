@@ -41,6 +41,7 @@ MonoBehaviour:
   - RespawnSpaceship
   - ReceiveLobbyStart
   - ReceiveTeamIconChange
+  - ReceiveMoveInstruction
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

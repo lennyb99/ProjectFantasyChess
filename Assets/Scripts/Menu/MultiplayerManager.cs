@@ -11,6 +11,7 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
 {
     public MenuManager menuManager;
     public AppManager appManager;
+    public GameManager gameManager;
 
     public PhotonView roomPhotonView;
     public static MultiplayerManager Instance { get; private set; }
@@ -169,6 +170,19 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
     public void ReceiveTeamIconChange(string id, bool isWhite)
     {
         menuManager.ChangeTeamIcon(id, isWhite);
+    }
+
+    public void SendMoveInstruction(string moveInstr)
+    {
+        roomPhotonView.RPC("ReceiveMoveInstruction", RpcTarget.Others, moveInstr);
+
+        Debug.Log("sending MOVE");
+    }
+
+    [PunRPC]
+    public void ReceiveMoveInstruction(string serializedMoveInstruction)
+    {
+        gameManager.QueueOpponentTurn(serializedMoveInstruction);
     }
 
     public string GetPlayernameFromId(string id)

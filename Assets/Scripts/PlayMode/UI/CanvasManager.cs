@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,34 +17,29 @@ public class CanvasManager : MonoBehaviour
     public PlayerManager playerManager;
     public GameManager gameManager;
 
+    public event Action OnPromotionSelected;
+
     // Start is called before the first frame update
     void Start()
     {
-        queenButton.onClick.AddListener(() => OnButtonClicked(queenButton));
-        rookButton.onClick.AddListener(() => OnButtonClicked(rookButton));
-        bishopButton.onClick.AddListener(() => OnButtonClicked(bishopButton)); 
-        knightButton.onClick.AddListener(() => OnButtonClicked(knightButton));
+        queenButton.onClick.AddListener(() => OnButtonClicked("Queen"));
+        rookButton.onClick.AddListener(() => OnButtonClicked("Rook"));
+        bishopButton.onClick.AddListener(() => OnButtonClicked("Bishop"));
+        knightButton.onClick.AddListener(() => OnButtonClicked("Knight"));
     }
 
 
-    private void OnButtonClicked(Button clickedButton)
+    private void OnButtonClicked(string pieceName)
     {
-        if (clickedButton == queenButton)
-        {
-            gameManager.SetPromotionPieceName("Queen");
-        }
-        if (clickedButton == rookButton)
-        {
-            gameManager.SetPromotionPieceName("Rook");
-        }
-        if (clickedButton == bishopButton)
-        {
-            gameManager.SetPromotionPieceName("Bishop");
-        }
-        if (clickedButton == knightButton)
-        {
-            gameManager.SetPromotionPieceName("Knight");
-        }
+        Debug.Log($"{pieceName} ausgewählt.");
+        gameManager.SetPromotionPieceName(pieceName);
+        gameManager.selectionCompleted = true;
+
+        // Promotion-Panel schließen
+        ClosePromotionPanel();
+
+        // Event auslösen
+        OnPromotionSelected?.Invoke();
     }
 
     public void OpenPromotingPanel()

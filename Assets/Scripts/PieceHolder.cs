@@ -60,4 +60,71 @@ public class PieceHolder : MonoBehaviour
                 return null;
         }
     }
+
+    public int GetPieceIdentifier(string pieceName)
+    {
+        switch (pieceName)
+        {
+            case "whitePawn":
+                return 10;
+            case "blackPawn":
+                return 20;
+            case "whiteBishop":
+                return 12;
+            case "blackBishop":
+                return 22;
+            case "whiteKnight":
+                return 11;
+            case "blackKnight":
+                return 21;
+            case "whiteRook":
+                return 13;
+            case "blackRook":
+                return 23;
+            case "whiteQueen":
+                return 14;
+            case "blackQueen":
+                return 24;
+            case "whiteKing":
+                return 15;
+            case "blackKing":
+                return 25;
+            default:
+                return 0;
+        }
+    }
+
+    public string GetPieceName(int pieceId)
+    {
+        switch (pieceId)
+        {
+            case 10:
+                return "whitePawn";
+            case 11:
+                return "whiteKnight";
+            case 12:
+                return "whiteBishop";
+            case 13:
+                return "whiteRook";
+            case 14:
+                return "whiteQueen";
+            case 15:
+                return "whiteKing";
+
+            case 20:
+                return "blackPawn";
+            case 21:
+                return "blackKnight";
+            case 22:
+                return "blackBishop";
+            case 23:
+                return "blackRook";
+            case 24:
+                return "blackQueen";
+            case 25:
+                return "blackKing";
+            default:
+                return null;
+        }
+    }
 }
