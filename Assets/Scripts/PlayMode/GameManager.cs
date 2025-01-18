@@ -73,7 +73,6 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        Debug.Log(GameBoardData.pieces.Count);
 
         
 
@@ -82,9 +81,11 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            await HandlePromotion(newMove, promotionMove);
+            promotionMove = true;
+            await HandlePromotion(newMove);
         }
 
+        Debug.Log("promotion?: " + promotionMove);
 
         HandleCastling(newMove);
 
@@ -119,7 +120,9 @@ public class GameManager : MonoBehaviour
     {
         MoveInstruction moveInstruction = new MoveInstruction();
 
+        Debug.Log(promotionMove + promotionPieceName);
         moveInstruction = moveInstruction.CreateMoveInformation(move, promotionMove, promotionPieceName);
+
 
         multiplayerManager.SendMoveInstruction(moveInstruction.GetSerializedMoveInstruction());
 
@@ -149,10 +152,13 @@ public class GameManager : MonoBehaviour
 
         ExecuteMoveOnBoard(new Move(psOrigin, psDestination, psOrigin.GetCurrentPiece()));
 
+        Debug.Log(moveInstruction.promotionMove + moveInstruction.promotionPieceType);
 
         // If a promotion move was made
         if (moveInstruction.promotionMove)
         {
+            Debug.Log("promotion was sent. handling..");
+
             // Remove piece from board
             Destroy(psDestination.GetCurrentPiece().gameObject);
 
@@ -160,10 +166,11 @@ public class GameManager : MonoBehaviour
             GameObject piecePrefab = pieceHolder.GetPiece(moveInstruction.promotionPieceType);
             if (piecePrefab == null)
             {
+                Debug.Log("promotion piece NULL");
                 return;
             }
             Piece newPiece = Instantiate(piecePrefab, psDestination.gameObject.transform.position, Quaternion.identity).GetComponent<Piece>();
-
+            Debug.Log("piece initalized success");
             // swapping of the square with piece relationship
             newPiece.currentSquare = psDestination;
             psDestination.SetCurrentPiece(newPiece);
@@ -356,16 +363,15 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
-    private async Task HandlePromotion(Move newMove, bool promotionMove)
+    private async Task HandlePromotion(Move newMove)
     {
-        promotionMove = true;
         selectionCompleted = false;
             
         InitiatePromotionSequence(newMove);
 
         await WaitForPromotionSelection();
-             
 
+        
         selectionCompleted = true;
         PromotePawn(newMove);
     }
@@ -416,7 +422,7 @@ public class GameManager : MonoBehaviour
             return;
         }
         Piece newPiece = Instantiate(piecePrefab, newMove.destinationSquare.gameObject.transform.position, Quaternion.identity).GetComponent<Piece>();
-        
+        GameBoardData.pieces.Add(newPiece.gameObject);
 
         // swapping of the square with piece relationship
         newPiece.SetCurrentSquare(promotingPawn.currentSquare);
