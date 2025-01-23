@@ -14,6 +14,8 @@ public class BoardBuilder : MonoBehaviour
 
     int DebugCount = 0;
 
+    public PlayModeCameraController cameraController;
+
     private void Start()
     {
         squares = new List<GameObject>();
@@ -51,6 +53,7 @@ public class BoardBuilder : MonoBehaviour
             SetTexturesForSquares();
             SendBoardDataToGameBoardData(boardLayout);
             SendPawnRuleData();
+            cameraController.AdjustCameraPosition(squares);
         }
     }
 

@@ -28,7 +28,16 @@ public class MenuManager : MonoBehaviour
     public List<UIPlayerPanel> playerPanels;
     public TMP_Text roomNamePanel;
 
-    
+    [Header("Create Room Panel View")]
+    public GameObject createRoomPanel;
+
+
+    [Header("Find Room Panel View")]
+    public GameObject findRoomPanel;
+
+    [Header("Notice Boards")]
+    public GameObject mediumNoticeBoard;
+    public TMP_Text mediumNoticeBoardText;
 
     // Start is called before the first frame update
     void Start()
@@ -61,7 +70,7 @@ public class MenuManager : MonoBehaviour
     public void SelectStartApp()
     {
         SwitchToPanelView(selectModePanel);
-        multiplayer.StartServerConnection();
+        
     }
 
     public void SelectMultiplayerScreen()
@@ -87,12 +96,40 @@ public class MenuManager : MonoBehaviour
     public void SelectEditMode()
     {
         SceneManager.LoadScene("EditMode");
-        SwitchToPanelView(roomPanel);
     }
 
     public void SelectStartMatch()
     {
-        multiplayer.SendLobbyStart();
+        if (multiplayer.IsPlayerMasterClient())
+        {
+            multiplayer.SendLobbyStart();
+        }
+        else
+        {
+            if (!mediumNoticeBoard.activeSelf)
+            {
+                StartCoroutine(SendNotice("Only the Lobby Leader can start the match."));
+            }
+        }
+    }
+
+    IEnumerator SendNotice(string notice)
+    {
+        mediumNoticeBoardText.text = notice;
+        mediumNoticeBoard.SetActive(true);
+        yield return new WaitForSeconds(3f);
+        mediumNoticeBoard.SetActive(false);
+    }
+
+    public void SelectExitRoom()
+    {
+        SwitchToPanelView(multiplayerPanel);
+        multiplayer.LeaveRoom();
+    }
+
+    public void SelectBackToMenu()
+    {
+        SwitchToPanelView(selectModePanel);
     }
 
     public void ExecuteStartMatch()
@@ -124,6 +161,26 @@ public class MenuManager : MonoBehaviour
             });
             FillDropDown(boardLayoutDropdown, boardNames);
         }
+    }
+
+    public void OpenCreateRoomPanelView()
+    {
+        createRoomPanel.SetActive(true);
+    }
+
+    public void OpenFindRoomPanelView()
+    {
+        findRoomPanel.SetActive(true);
+    }
+
+    public void CloseCreateRoomPanelView()
+    {
+        createRoomPanel.SetActive(false);
+    }
+
+    public void CloseFindRoomPanelView()
+    {
+        findRoomPanel.SetActive(false);
     }
 
     public void UpdateRoomPanelInformation(string roomName=null)

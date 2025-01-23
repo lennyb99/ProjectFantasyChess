@@ -7,6 +7,7 @@ public class PlayerManager : MonoBehaviour
     public static PlayerManager Instance;
 
     public GameManager gameManager;
+    public CanvasManager canvasManager;
 
     [SerializeField]
     private GameObject selectedObject;
@@ -25,8 +26,17 @@ public class PlayerManager : MonoBehaviour
         {
             CheckForPieceMovements();
         }
+
+        CheckForMenuButtons();
     }
 
+    private void CheckForMenuButtons()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKey(KeyCode.Tab))
+        {
+            canvasManager.ToggleMenuPanel();
+        }
+    }
     private void CheckForPieceMovements()
     {
         if (Input.GetMouseButtonDown(0))

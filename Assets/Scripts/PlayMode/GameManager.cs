@@ -44,6 +44,8 @@ public class GameManager : MonoBehaviour
     {
         // Collecting information for whether the move was a promoting move and then using that to make a MoveInstruction Object to send.
         bool promotionMove = false;
+        bool castlingMove = false;
+        
 
         // Check if values of Move Object are valid
         if (!ValidateMoveRequest(newMove))
@@ -72,8 +74,6 @@ public class GameManager : MonoBehaviour
             newMove.movedPiece.ResetPhysicalPosition();
             return;
         }
-
-
         
 
         if (!CheckForPromotion(newMove)) { 
@@ -85,9 +85,11 @@ public class GameManager : MonoBehaviour
             await HandlePromotion(newMove);
         }
 
-        Debug.Log("promotion?: " + promotionMove);
-
-        HandleCastling(newMove);
+        // Checks if castling is performed and gives true to collect data for MoveInstruction
+        if (HandleCastling(newMove))
+        {
+            castlingMove = true;
+        }
 
         RegisterMove(newMove);
         Debug.Log("Move is permitted");
@@ -106,27 +108,25 @@ public class GameManager : MonoBehaviour
         }
 
         // Sending move to other players
-        SendMoveToOtherPlayers(newMove, promotionMove);
+        SendMoveToOtherPlayers(newMove, promotionMove, castlingMove);
 
         // Any class wide data that has been saved to calculate this move specifically
         ResetMoveInformation();
 
         Debug.Log("----");
         Debug.Log("----");
-        Debug.Log("----");
     }
 
-    private void SendMoveToOtherPlayers(Move move, bool promotionMove)
+    private void SendMoveToOtherPlayers(Move move, bool promotionMove, bool castling)
     {
         MoveInstruction moveInstruction = new MoveInstruction();
 
-        Debug.Log(promotionMove + promotionPieceName);
-        moveInstruction = moveInstruction.CreateMoveInformation(move, promotionMove, promotionPieceName);
+        moveInstruction = moveInstruction.CreateMoveInformation(move, promotionMove, promotionPieceName, castling);
 
 
         multiplayerManager.SendMoveInstruction(moveInstruction.GetSerializedMoveInstruction());
 
-        
+        Debug.Log("castling: " + moveInstruction.castlingMove);
 
         promotionMove = false;
     }
@@ -152,13 +152,10 @@ public class GameManager : MonoBehaviour
 
         ExecuteMoveOnBoard(new Move(psOrigin, psDestination, psOrigin.GetCurrentPiece()));
 
-        Debug.Log(moveInstruction.promotionMove + moveInstruction.promotionPieceType);
 
         // If a promotion move was made
         if (moveInstruction.promotionMove)
         {
-            Debug.Log("promotion was sent. handling..");
-
             // Remove piece from board
             Destroy(psDestination.GetCurrentPiece().gameObject);
 
@@ -170,11 +167,28 @@ public class GameManager : MonoBehaviour
                 return;
             }
             Piece newPiece = Instantiate(piecePrefab, psDestination.gameObject.transform.position, Quaternion.identity).GetComponent<Piece>();
-            Debug.Log("piece initalized success");
             // swapping of the square with piece relationship
             newPiece.currentSquare = psDestination;
             psDestination.SetCurrentPiece(newPiece);
             newPiece.SyncPiecePositionToCurrentSquare();
+        }
+
+        // if castling move was made
+        if (moveInstruction.castlingMove)
+        {
+            Debug.Log("detecting castling move");
+            Move rookMove = null;
+            if(psDestination.midLeft != null && psDestination.midLeft.GetCurrentPiece() != null &&
+               psDestination.midLeft.GetCurrentPiece().pieceType == PieceType.rook)
+            {
+                rookMove = new Move(psDestination.midLeft, psDestination.midRight, psDestination.midLeft.GetCurrentPiece());
+            }
+            else
+            {
+                rookMove = new Move(psDestination.midRight, psDestination.midLeft, psDestination.midRight.GetCurrentPiece());
+            }
+
+            ExecuteMoveOnBoard(rookMove);
         }
     }
 
@@ -243,7 +257,6 @@ public class GameManager : MonoBehaviour
                 {
                     if (DoesMovePreventCheckmate(move))
                     {
-                        Debug.Log("detection finished early");
                         Debug.Log(move.movedPiece.gameObject.name + move.destinationSquare.gameObject.name + move.originSquare.gameObject.name);
                         return false;
                     }
@@ -436,12 +449,11 @@ public class GameManager : MonoBehaviour
     }
 
 
-    private void HandleCastling(Move newMove)
+    private bool HandleCastling(Move newMove)
     {
         if (King.castlingFlag)
         {
             Move rookMove = null;
-            Debug.Log(newMove.movedPiece.currentSquare);
             if(newMove.movedPiece.currentSquare.midRight.GetCurrentPiece() != null &&
                 newMove.movedPiece.currentSquare.midRight.GetCurrentPiece().pieceType == PieceType.rook)
             {
@@ -461,9 +473,12 @@ public class GameManager : MonoBehaviour
             if(rookMove != null) { 
                 ExecuteMoveOnBoard(rookMove);
             }
+            King.castlingFlag = false;
+            return true;
         }
 
         King.castlingFlag = false;
+        return false;
     }
 
     private bool ValidateMoveRequest(Move newMove)
@@ -498,7 +513,10 @@ public class GameManager : MonoBehaviour
         GameBoardData.whiteToMove = !GameBoardData.whiteToMove;
     }
 
-    
+    public void LeaveGame()
+    {
+        multiplayerManager.LeaveRoom();
+    }
 
 }
 
@@ -527,15 +545,18 @@ public class MoveInstruction
     public int destinationSquareFile;
     public int destinationSquareRank;
 
+    public bool castlingMove;
+
     public bool promotionMove;
     public string promotionPieceType;
 
-    public MoveInstruction CreateMoveInformation(Move move, bool promotionMove, string promotionPieceType)
+    public MoveInstruction CreateMoveInformation(Move move, bool promotionMove, string promotionPieceType, bool castling)
     {
         originSquareFile = move.originSquare.file;
         originSquareRank = move.originSquare.rank;
         destinationSquareFile = move.destinationSquare.file;
         destinationSquareRank = move.destinationSquare.rank;
+        castlingMove = castling;
 
         this.promotionMove = promotionMove;
         this.promotionPieceType = promotionPieceType;

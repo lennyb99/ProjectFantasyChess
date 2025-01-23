@@ -16,7 +16,6 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
     public PhotonView roomPhotonView;
     public static MultiplayerManager Instance { get; private set; }
 
-    public int teamnumber;
 
     private string userId;
 
@@ -29,13 +28,14 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
         }
 
         Instance = this;
+
         DontDestroyOnLoad(gameObject); 
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        teamnumber = -1;
+        StartServerConnection();
     }
 
     // Update is called once per frame
@@ -148,16 +148,16 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
     {
         // Check for Lobby leader
 
-        roomPhotonView.RPC("ReceiveLobbyStart", RpcTarget.All, appManager.GetCurrentSerializedBoardLayout());
+        roomPhotonView.RPC("ReceiveLobbyStart", RpcTarget.All, StringCompresser.CompressString(appManager.GetCurrentSerializedBoardLayout()));
             
         
     }
 
     [PunRPC]
-    public void ReceiveLobbyStart(string serializedBoardLayout)
+    public void ReceiveLobbyStart(byte[] serializedBoardLayout)
     {
         Debug.Log("starting game..");
-        appManager.SetCurrentBoardLayout(serializedBoardLayout, menuManager.IsWhitePovSelected());
+        appManager.SetCurrentBoardLayout(StringCompresser.DecompressString(serializedBoardLayout), menuManager.IsWhitePovSelected());
         menuManager.ExecuteStartMatch();
     }
 
@@ -175,8 +175,6 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
     public void SendMoveInstruction(string moveInstr)
     {
         roomPhotonView.RPC("ReceiveMoveInstruction", RpcTarget.Others, moveInstr);
-
-        Debug.Log("sending MOVE");
     }
 
     [PunRPC]
@@ -195,6 +193,23 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
             }
         }
         return null;
+    }
+
+    public void LeaveRoom()
+    {
+        PhotonNetwork.LeaveRoom();
+    }
+
+    public bool IsPlayerMasterClient()
+    {
+        if(PhotonNetwork.LocalPlayer == PhotonNetwork.MasterClient)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
 }
