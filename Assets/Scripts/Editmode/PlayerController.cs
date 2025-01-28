@@ -7,23 +7,37 @@ using UnityEngine.EventSystems;
 public class PlayerController : MonoBehaviour
 {
     public BoardManager boardManager;
+    public EditCanvasManager canvasManager;
 
     public bool multiSelect = false;
+
+    public bool allowSquareActivation = true;
 
     public GameObject multiSelectFirstSquare;
     public GameObject multiSelectLastSquare;
 
     void Update()
     {
+        if (allowSquareActivation)
+        {
+            DetectSquareActivation();
+        }
+
+        DetectMenuActivation();
+    }
+
+    private void DetectSquareActivation()
+    {
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             multiSelect = true;
-        }else if (Input.GetKeyUp(KeyCode.LeftShift))
+        }
+        else if (Input.GetKeyUp(KeyCode.LeftShift))
         {
-            multiSelect= false;
+            multiSelect = false;
         }
 
-        if (Input.GetMouseButtonDown(0)) 
+        if (Input.GetMouseButtonDown(0))
         {
             if (!multiSelect)
             {
@@ -35,9 +49,9 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if(multiSelect && Input.GetMouseButtonUp(0))
+        if (multiSelect && Input.GetMouseButtonUp(0))
         {
-            
+
             multiSelectLastSquare = DetectMultiSelectSquare();
             if (multiSelectFirstSquare != null && multiSelectLastSquare != null)
             {
@@ -46,6 +60,12 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void DetectMenuActivation()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyUp(KeyCode.Tab)) {
+            canvasManager.ToggleEscapeMenu();
+        }
+    }
     GameObject DetectMultiSelectSquare()
     {
         if (EventSystem.current.IsPointerOverGameObject())
@@ -101,4 +121,6 @@ public class PlayerController : MonoBehaviour
 
         }
     }
+
+    
 }

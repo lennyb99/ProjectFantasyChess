@@ -18,7 +18,6 @@ public class AppManager : MonoBehaviour
     JsonSerializerSettings serializerSettings;
 
     public BoardLayout selectedBoardLayout;
-    private int count = 0;
 
     private void Awake()
     {
@@ -60,9 +59,9 @@ public class AppManager : MonoBehaviour
         }
     }
 
-    public void AddBoardLayout(BoardLayout bl)
+    public void AddBoardLayout(string boardName,BoardLayout bl)
     {
-        boardLayouts.Add(("board"+count,bl));
+        boardLayouts.Add((boardName,bl));
     }
 
     public void SelectBoardLayout(BoardLayout bl)
@@ -219,7 +218,7 @@ public class ValueTupleKeyDictionaryConverter : JsonConverter
         {
             if (string.IsNullOrEmpty(kvp.Key))
             {
-                continue; // Überspringe leere oder ungültige Schlüssel
+                continue; 
             }
 
             var keyParts = kvp.Key.Trim('(', ')').Split(',');

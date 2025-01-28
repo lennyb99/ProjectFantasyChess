@@ -106,19 +106,19 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    public void CreateBoardLayout()
+    public void CreateBoardLayout(string boardname)
     {
         Dictionary<(int, int), (bool, string)> squareOccupations = new Dictionary<(int, int), (bool, string)>();
         foreach (var squareObject in squares)
         {
             EditSquare square = squareObject.GetComponent<EditSquare>();
 
-            squareOccupations.Add((square.file, square.rank), (square.isActive, square.pieceType));
+            squareOccupations.Add((square.file, square.rank), (square.isActive, square.GetSquareOccupationAsString()));
         }
         BoardLayout boardLayout = new BoardLayout(fileCount, rowCount, squareOccupations, true, true);
 
         //GameData.SetBoardLayout(boardLayout);  OLD WAY
-        appManager.AddBoardLayout(boardLayout);
+        appManager.AddBoardLayout(boardname,boardLayout);
     }
 
     public List<GameObject> ReturnMatrixOfSquareObjects(EditSquare firstSquare, EditSquare secondSquare)
@@ -146,10 +146,6 @@ public class BoardManager : MonoBehaviour
         return checkValue >= min && checkValue <= max;
     }
 
-    public void test()
-    {
-        Debug.Log("test");
-    }
 
     private void addFiles()
     {

@@ -9,9 +9,8 @@ public class EditManager : MonoBehaviour
 {
     public BoardManager boardManager;
 
-    public void Submit()
+    public void Submit(string boardName)
     {
-        boardManager.CreateBoardLayout();
-        SceneManager.LoadScene("MainMenu");
+        boardManager.CreateBoardLayout(boardName);
     }
 }

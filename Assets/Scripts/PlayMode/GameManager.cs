@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
     public bool selectionCompleted = true;
     private Piece promotingPawn;
     public string promotionPieceName = "";
-    public event Action OnPromotionPieceNameChanged;
+    //public event Action OnPromotionPieceNameChanged;
 
     private TaskCompletionSource<bool> promotionTaskCompletionSource;
 
@@ -50,6 +50,7 @@ public class GameManager : MonoBehaviour
         // Check if values of Move Object are valid
         if (!ValidateMoveRequest(newMove))
         {
+            newMove.movedPiece.ResetPhysicalPosition();
             return;
         }
 
@@ -364,10 +365,13 @@ public class GameManager : MonoBehaviour
     {
         if(newMove.movedPiece.pieceType == PieceType.pawn)
         {
-            if(newMove.destinationSquare.rank == GameBoardData.whitePawnPromotionRank &&
-                newMove.movedPiece.isWhite ||
-                newMove.destinationSquare.rank == GameBoardData.blackPawnPromotionRank &&
-                !newMove.movedPiece.isWhite)
+            //if(newMove.destinationSquare.rank == GameBoardData.whitePawnPromotionRank &&
+            //    newMove.movedPiece.isWhite ||
+            //    newMove.destinationSquare.rank == GameBoardData.blackPawnPromotionRank &&
+            //    !newMove.movedPiece.isWhite)
+
+            if(newMove.movedPiece.isWhite && newMove.destinationSquare.topMid == null || 
+                !newMove.movedPiece.isWhite && newMove.destinationSquare.bottomMid == null)
             {
                 this.promotingPawn = newMove.movedPiece;
                 return true;

@@ -5,8 +5,29 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum SelectionType
+{
+    whitePawn,
+    whiteKnight,
+    whiteBishop,
+    whiteRook,
+    whiteQueen,
+    whiteKing,
+    blackPawn,
+    blackKnight,
+    blackBishop,
+    blackRook,
+    blackQueen,
+    blackKing,
+    editSquareWand,
+    trashcan,
+}
+
 public class PieceTypeSelectionManager : MonoBehaviour
 {
+
+
+
     public Button whitePawnButton;
     public Button blackPawnButton;
     public Button whiteKnightButton;
@@ -20,10 +41,11 @@ public class PieceTypeSelectionManager : MonoBehaviour
     public Button whiteKingButton;
     public Button blackKingButton;
 
-    public Button UnselectAllButton;
+    public Button editSquareWandButton;
+    public Button trashCanButton;
 
     private List<Button> selectPieceTypeButtons = new List<Button>();
-    public string activePieceTypeSelect;
+    public SelectionType selectedPieceType;
 
     public static PieceTypeSelectionManager Instance {  get; private set; }
 
@@ -43,7 +65,7 @@ public class PieceTypeSelectionManager : MonoBehaviour
     void Start()
     {
         RegisterButtons();
-        activePieceTypeSelect = "unselected";
+        selectedPieceType = SelectionType.editSquareWand;
     }
 
     void Update()
@@ -65,6 +87,8 @@ public class PieceTypeSelectionManager : MonoBehaviour
         selectPieceTypeButtons.Add(blackQueenButton);
         selectPieceTypeButtons.Add(whiteKingButton);
         selectPieceTypeButtons.Add(blackKingButton);
+        selectPieceTypeButtons.Add(trashCanButton);
+        selectPieceTypeButtons.Add(editSquareWandButton);
     }
    
     private void AdjustColors(Button selectButton, Color color)
@@ -87,13 +111,13 @@ public class PieceTypeSelectionManager : MonoBehaviour
     public void SelectWhitePawn()
     {
         UnselectAllColors();
-        if (activePieceTypeSelect == "whitePawn")
+        if (selectedPieceType == SelectionType.whitePawn)
         {
-            activePieceTypeSelect = "unselected";
+            selectedPieceType = SelectionType.editSquareWand;
         }
         else
         {
-            activePieceTypeSelect = "whitePawn";
+            selectedPieceType = SelectionType.whitePawn;
             AdjustColors(whitePawnButton, Color.green);
         }
     }
@@ -101,13 +125,13 @@ public class PieceTypeSelectionManager : MonoBehaviour
     public void SelectBlackPawn()
     {
         UnselectAllColors();
-        if (activePieceTypeSelect == "blackPawn")
+        if (selectedPieceType == SelectionType.blackPawn)
         {
-            activePieceTypeSelect = "unselected";
+            selectedPieceType = SelectionType.editSquareWand;
         }
         else
         {
-            activePieceTypeSelect = "blackPawn";
+            selectedPieceType = SelectionType.blackPawn;
             AdjustColors(blackPawnButton, Color.green);
         }
     }
@@ -115,13 +139,13 @@ public class PieceTypeSelectionManager : MonoBehaviour
     public void SelectWhiteBishop()
     {
         UnselectAllColors();
-        if (activePieceTypeSelect == "whiteBishop")
+        if (selectedPieceType == SelectionType.whiteBishop)
         {
-            activePieceTypeSelect = "unselected";
+            selectedPieceType = SelectionType.editSquareWand;
         }
         else
         {
-            activePieceTypeSelect = "whiteBishop";
+            selectedPieceType = SelectionType.whiteBishop;
             AdjustColors(whiteBishopButton, Color.green);
         }
     }
@@ -129,13 +153,13 @@ public class PieceTypeSelectionManager : MonoBehaviour
     public void SelectBlackBishop()
     {
         UnselectAllColors();
-        if (activePieceTypeSelect == "blackBishop")
+        if (selectedPieceType == SelectionType.blackBishop)
         {
-            activePieceTypeSelect = "unselected";
+            selectedPieceType = SelectionType.editSquareWand;
         }
         else
         {
-            activePieceTypeSelect = "blackBishop";
+            selectedPieceType = SelectionType.blackBishop;
             AdjustColors(blackBishopButton, Color.green);
         }
     }
@@ -143,13 +167,13 @@ public class PieceTypeSelectionManager : MonoBehaviour
     public void SelectWhiteKnight()
     {
         UnselectAllColors();
-        if (activePieceTypeSelect == "whiteKnight")
+        if (selectedPieceType == SelectionType.whiteKnight)
         {
-            activePieceTypeSelect = "unselected";
+            selectedPieceType = SelectionType.editSquareWand;
         }
         else
         {
-            activePieceTypeSelect = "whiteKnight";
+            selectedPieceType = SelectionType.whiteKnight;
             AdjustColors(whiteKnightButton, Color.green);
         }
     }
@@ -157,13 +181,13 @@ public class PieceTypeSelectionManager : MonoBehaviour
     public void SelectBlackKnight()
     {
         UnselectAllColors();
-        if (activePieceTypeSelect == "blackKnight")
+        if (selectedPieceType == SelectionType.blackKnight)
         {
-            activePieceTypeSelect = "unselected";
+            selectedPieceType = SelectionType.editSquareWand;
         }
         else
         {
-            activePieceTypeSelect = "blackKnight";
+            selectedPieceType = SelectionType.blackKnight;
             AdjustColors(blackKnightButton, Color.green);
         }
     }
@@ -171,13 +195,13 @@ public class PieceTypeSelectionManager : MonoBehaviour
     public void SelectWhiteRook()
     {
         UnselectAllColors();
-        if (activePieceTypeSelect == "whiteRook")
+        if (selectedPieceType == SelectionType.whiteRook)
         {
-            activePieceTypeSelect = "unselected";
+            selectedPieceType = SelectionType.editSquareWand;
         }
         else
         {
-            activePieceTypeSelect = "whiteRook";
+            selectedPieceType = SelectionType.whiteRook;
             AdjustColors(whiteRookButton, Color.green);
         }
     }
@@ -185,13 +209,13 @@ public class PieceTypeSelectionManager : MonoBehaviour
     public void SelectBlackRook()
     {
         UnselectAllColors();
-        if (activePieceTypeSelect == "blackRook")
+        if (selectedPieceType == SelectionType.blackRook)
         {
-            activePieceTypeSelect = "unselected";
+            selectedPieceType = SelectionType.editSquareWand;
         }
         else
         {
-            activePieceTypeSelect = "blackRook";
+            selectedPieceType = SelectionType.blackRook;
             AdjustColors(blackRookButton, Color.green);
         }
     }
@@ -199,13 +223,13 @@ public class PieceTypeSelectionManager : MonoBehaviour
     public void SelectWhiteQueen()
     {
         UnselectAllColors();
-        if (activePieceTypeSelect == " whiteQueen")
+        if (selectedPieceType == SelectionType.whiteQueen)
         {
-            activePieceTypeSelect = "unselected";
+            selectedPieceType = SelectionType.editSquareWand;
         }
         else
         {
-            activePieceTypeSelect = "whiteQueen";
+            selectedPieceType = SelectionType.whiteQueen;
             AdjustColors(whiteQueenButton, Color.green);
         }
     }
@@ -213,13 +237,13 @@ public class PieceTypeSelectionManager : MonoBehaviour
     public void SelectBlackQueen()
     {
         UnselectAllColors();
-        if (activePieceTypeSelect == "blackQueen")
+        if (selectedPieceType == SelectionType.blackQueen)
         {
-            activePieceTypeSelect = "unselected";
+            selectedPieceType = SelectionType.editSquareWand;
         }
         else
         {
-            activePieceTypeSelect = "blackQueen";
+            selectedPieceType = SelectionType.blackQueen;
             AdjustColors(blackQueenButton, Color.green);
         }
     }
@@ -227,12 +251,12 @@ public class PieceTypeSelectionManager : MonoBehaviour
     public void SelectWhiteKing()
     {
         UnselectAllColors();
-        if (activePieceTypeSelect == "whiteKing")
+        if (selectedPieceType == SelectionType.whiteKing)
         {
-            activePieceTypeSelect = "unselected";
+            selectedPieceType = SelectionType.editSquareWand;
         }
-        else { 
-            activePieceTypeSelect = "whiteKing";
+        else {
+            selectedPieceType = SelectionType.whiteKing;
             AdjustColors(whiteKingButton, Color.green);
         }
     }
@@ -240,21 +264,34 @@ public class PieceTypeSelectionManager : MonoBehaviour
     public void SelectBlackKing()
     {
         UnselectAllColors();
-        if (activePieceTypeSelect == "blackKing")
+        if (selectedPieceType == SelectionType.blackKing)
         {
-            activePieceTypeSelect = "unselected";
+            selectedPieceType = SelectionType.editSquareWand;
         }
         else
         {
-            activePieceTypeSelect = "blackKing";
+            selectedPieceType = SelectionType.blackKing;
             AdjustColors(blackKingButton, Color.green);
         }
     }
 
-    public void UnselectAll()
+    public void SelectEditSquareWand()
     {
-        activePieceTypeSelect = "unselected";
         UnselectAllColors();
+        
+            
+        selectedPieceType = SelectionType.editSquareWand;
+
+        AdjustColors(editSquareWandButton, Color.green);
     }
-    
+
+    public void SelectTrashCan()
+    {
+        UnselectAllColors();
+
+        selectedPieceType = SelectionType.trashcan;
+
+        AdjustColors(trashCanButton, Color.green);
+    }
+
 }

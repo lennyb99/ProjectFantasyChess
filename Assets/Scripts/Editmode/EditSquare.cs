@@ -2,10 +2,27 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum EditSquarePieceTypes
+{
+    whitePawn,
+    whiteKnight,
+    whiteBishop,
+    whiteRook,
+    whiteQueen,
+    whiteKing,
+    blackPawn,
+    blackKnight,
+    blackBishop,
+    blackRook,
+    blackQueen,
+    blackKing,
+    unselected
+}
 public class EditSquare : MonoBehaviour
 {
     public bool isActive;
-    public string pieceType;
+    public SelectionType selectedPieceType;
+    public EditSquarePieceTypes currentPiece;
 
     public Sprite activeFieldSpriteBright;
     public Sprite activeFieldSpriteDark;
@@ -38,11 +55,12 @@ public class EditSquare : MonoBehaviour
     public void Start()
     {
         pieceTypeSelectionManager = PieceTypeSelectionManager.Instance;
+        currentPiece = EditSquarePieceTypes.unselected;
     }
 
     public void HandleClickedOn()
     {
-        if (pieceTypeSelectionManager.activePieceTypeSelect == "unselected")
+        if (pieceTypeSelectionManager.selectedPieceType == SelectionType.editSquareWand)
         { 
             if (isActive)
             {
@@ -55,50 +73,66 @@ public class EditSquare : MonoBehaviour
         }
         else
         {
-            ChangeSquareOccupation(pieceTypeSelectionManager.activePieceTypeSelect);
+            ChangeSquareOccupation(pieceTypeSelectionManager.selectedPieceType);
         }
     }
 
-    public void ChangeSquareOccupation(string pieceType)
+    public void ChangeSquareOccupation(SelectionType selectedPieceType)
     {
-        this.pieceType = pieceType;
-        switch (pieceType)
+        this.selectedPieceType = selectedPieceType;
+        switch (selectedPieceType)
         {
-            case "whitePawn":
+            case SelectionType.whitePawn:
                 pieceOnSquareRenderer.sprite = whitePawn;
+                currentPiece = EditSquarePieceTypes.whitePawn;
                 break;
-            case "whiteKnight":
+            case SelectionType.whiteKnight:
                 pieceOnSquareRenderer.sprite = whiteKnight;
+                currentPiece = EditSquarePieceTypes.whiteKnight;
                 break;
-            case "whiteBishop":
+            case SelectionType.whiteBishop:
                 pieceOnSquareRenderer.sprite = whiteBishop;
+                currentPiece = EditSquarePieceTypes.whiteBishop;
                 break;
-            case "whiteRook":
+            case SelectionType.whiteRook:
                 pieceOnSquareRenderer.sprite = whiteRook;
+                currentPiece = EditSquarePieceTypes.whiteRook;
                 break;
-            case "whiteQueen":
+            case SelectionType.whiteQueen:
                 pieceOnSquareRenderer.sprite = whiteQueen;
+                currentPiece = EditSquarePieceTypes.whiteQueen;
                 break;
-            case "whiteKing":
+            case SelectionType.whiteKing:
                 pieceOnSquareRenderer.sprite = whiteKing;
+                currentPiece = EditSquarePieceTypes.whiteKing;
                 break;
-            case "blackPawn":
+            case SelectionType.blackPawn:
                 pieceOnSquareRenderer.sprite = blackPawn;
+                currentPiece = EditSquarePieceTypes.blackPawn;
                 break;
-            case "blackKnight":
+            case SelectionType.blackKnight:
                 pieceOnSquareRenderer.sprite = blackKnight;
+                currentPiece = EditSquarePieceTypes.blackKnight;
                 break;
-            case "blackBishop":
+            case SelectionType.blackBishop:
                 pieceOnSquareRenderer.sprite = blackBishop;
+                currentPiece = EditSquarePieceTypes.blackBishop;
                 break;
-            case "blackRook":
+            case SelectionType.blackRook:
                 pieceOnSquareRenderer.sprite = blackRook;
+                currentPiece = EditSquarePieceTypes.blackRook;
                 break;
-            case "blackQueen":
+            case SelectionType.blackQueen:
                 pieceOnSquareRenderer.sprite = blackQueen;
+                currentPiece = EditSquarePieceTypes.blackQueen;
                 break;
-            case "blackKing":
+            case SelectionType.blackKing:
                 pieceOnSquareRenderer.sprite = blackKing;
+                currentPiece = EditSquarePieceTypes.blackKing;
+                break;
+            case SelectionType.trashcan:
+                pieceOnSquareRenderer.sprite = null;
+                currentPiece = EditSquarePieceTypes.unselected;
                 break;
             default:
                 break;
@@ -148,6 +182,41 @@ public class EditSquare : MonoBehaviour
                 ren.sprite = inactiveFieldSpriteBright;
             }
             
+        }
+    }
+
+    public string GetSquareOccupationAsString()
+    {
+        switch (currentPiece)
+        {
+            case EditSquarePieceTypes.whitePawn:
+                return "whitePawn";
+            case EditSquarePieceTypes.whiteKnight:
+                return "whiteKnight";
+            case EditSquarePieceTypes.whiteBishop:
+                return "whiteBishop";
+            case EditSquarePieceTypes.whiteRook:
+                return "whiteRook";
+            case EditSquarePieceTypes.whiteQueen:
+                return "whiteQueen";
+            case EditSquarePieceTypes.whiteKing:
+                return "whiteKing";
+            case EditSquarePieceTypes.blackPawn:
+                return "blackPawn";
+            case EditSquarePieceTypes.blackKnight:
+                return "blackKnight";
+            case EditSquarePieceTypes.blackBishop:
+                return "blackBishop";
+            case EditSquarePieceTypes.blackRook:
+                return "blackRook";
+            case EditSquarePieceTypes.blackQueen:
+                return "blackQueen";
+            case EditSquarePieceTypes.blackKing:
+                return "blackKing";
+            case EditSquarePieceTypes.unselected:
+                return "";
+            default:
+                return "";
         }
     }
 }

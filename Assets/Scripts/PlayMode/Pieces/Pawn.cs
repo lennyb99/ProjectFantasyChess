@@ -27,7 +27,8 @@ public static class Pawn
         int rank = currentSquare.rank;
 
         // two squares forward
-        if (rank == GameBoardData.whitePawnBaseRank && //checks if pawn is allowed to push two ranks from its position
+        if (//rank == GameBoardData.whitePawnBaseRank && //checks if pawn is allowed to push two ranks from its position
+            movedPiece.moveCount == 0 &&
             currentSquare.topMid != null &&  //checks if squares infront of it exist
             currentSquare.topMid.topMid != null &&
             currentSquare.topMid.GetCurrentPiece() == null && //checks if squares in front of it are empty
@@ -95,7 +96,8 @@ public static class Pawn
         int rank = currentSquare.rank;
 
         // two squares forward
-        if (rank == GameBoardData.blackPawnBaseRank && //checks if pawn is allowed to push two ranks from its position
+        if (//rank == GameBoardData.blackPawnBaseRank && //checks if pawn is allowed to push two ranks from its position
+            movedPiece.moveCount == 0 &&
             currentSquare.bottomMid != null &&  //checks if squares infront of it exist
             currentSquare.bottomMid.bottomMid != null &&
             currentSquare.bottomMid.GetCurrentPiece() == null && //checks if squares in front of it are empty
