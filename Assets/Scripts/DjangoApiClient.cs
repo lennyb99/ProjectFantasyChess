@@ -7,6 +7,7 @@ using Unity.VisualScripting.FullSerializer;
 using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using System.Collections.Generic;
 
 /// <summary>
 /// Enthält Daten für das Speichern eines Spielbretts.
@@ -138,8 +139,7 @@ public static class DjangoBackendAPI
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
 
-            // Falls du mit chunkedTransfer Probleme hast, kann man das hier ausschalten:
-            request.chunkedTransfer = false;
+
             request.redirectLimit = 0;
             request.useHttpContinue = false;
 
@@ -188,9 +188,8 @@ public static class DjangoBackendAPI
             title = title,
             position_data = positionData
         };
-
         string jsonData = JsonUtility.ToJson(boardData);
-        Debug.Log("BOARDDATA: " + jsonData);
+        //Debug.Log("BOARDDATA: " + jsonData);
 
         using (UnityWebRequest request = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST))
         {
@@ -246,4 +245,52 @@ public static class DjangoBackendAPI
             }
         }
     }
+
+    public static string[] SplitJsonObjects(string jsonString)
+    {
+        List<string> jsonObjects = new List<string>();
+        int braceCount = 0;
+        int startIndex = -1;
+
+        for (int i = 0; i < jsonString.Length; i++)
+        {
+            char c = jsonString[i];
+
+            // Beginn eines JSON-Objekts
+            if (c == '{')
+            {
+                // Wenn noch kein Objekt begonnen hat, merke den Startindex
+                if (braceCount == 0)
+                {
+                    startIndex = i;
+                }
+                braceCount++;
+            }
+            // Ende eines JSON-Objekts
+            else if (c == '}')
+            {
+                braceCount--;
+                // Wenn alle geöffneten Klammern geschlossen wurden, ist das Objekt komplett
+                if (braceCount == 0 && startIndex != -1)
+                {
+                    int length = i - startIndex + 1;
+                    string objString = jsonString.Substring(startIndex, length);
+                    jsonObjects.Add(objString);
+                    startIndex = -1;
+                }
+            }
+        }
+
+        return jsonObjects.ToArray();
+    }
 }
+
+[Serializable]
+public class BoardResponse
+{
+    public string title;
+    public string user;          
+    public string position_data;
+}
+
+

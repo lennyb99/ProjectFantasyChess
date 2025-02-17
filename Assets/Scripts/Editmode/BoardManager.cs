@@ -15,13 +15,12 @@ public class BoardManager : MonoBehaviour
     public GameObject squarePrefab;
     public GameObject squareCollection;
 
-    AppManager appManager;
+    
 
 
     // Start is called before the first frame update
     void Start()
     {
-        appManager = AppManager.Instance;
         InstantiateSquares();
         SortSquares();
         CountDimensions();
@@ -106,7 +105,7 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    public void CreateBoardLayout(string boardname)
+    public BoardLayout CreateBoardLayout()
     {
         Dictionary<(int, int), (bool, string)> squareOccupations = new Dictionary<(int, int), (bool, string)>();
         foreach (var squareObject in squares)
@@ -116,9 +115,8 @@ public class BoardManager : MonoBehaviour
             squareOccupations.Add((square.file, square.rank), (square.isActive, square.GetSquareOccupationAsString()));
         }
         BoardLayout boardLayout = new BoardLayout(fileCount, rowCount, squareOccupations, true, true);
-
-        //GameData.SetBoardLayout(boardLayout);  OLD WAY
-        appManager.AddBoardLayout(boardname,boardLayout);
+        
+        return boardLayout;
     }
 
     public List<GameObject> ReturnMatrixOfSquareObjects(EditSquare firstSquare, EditSquare secondSquare)

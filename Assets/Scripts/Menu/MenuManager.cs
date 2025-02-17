@@ -23,6 +23,17 @@ public class MenuManager : MonoBehaviour
     public TMP_InputField findRoomInput;
     public TMP_Dropdown boardLayoutDropdown;
 
+    [Header("Login Screen View")]
+    public GameObject accountScreenPanel;
+    public GameObject createAccountPanel;
+    public GameObject loginAccountPanel;
+    public TMP_InputField loginUsernameInput;
+    public TMP_InputField loginPasswordInput;
+    public TMP_InputField registerUsernameInput;
+    public TMP_InputField registerPasswordInput;
+    public TMP_Text usernameLabel;
+
+
     [Header("Room Panel View")]
     public GameObject roomPanel;
     public List<UIPlayerPanel> playerPanels;
@@ -47,7 +58,17 @@ public class MenuManager : MonoBehaviour
         currentPanel = startMenuPanel;
 
         RegisterToMultiplayerManager();
+
+        if(!multiplayer.loggedIn)
+        {
+            SwitchToPanelView(accountScreenPanel);
+        }
+        else
+        {
+            startMenuPanel.SetActive(true);
+        }
     }
+
     // Update is called once per frame
     void Update()
     {
@@ -108,16 +129,16 @@ public class MenuManager : MonoBehaviour
         {
             if (!mediumNoticeBoard.activeSelf)
             {
-                StartCoroutine(SendNotice("Only the Lobby Leader can start the match."));
+                StartCoroutine(SendNotice("Only the Lobby Leader can start the match.",3f));
             }
         }
     }
 
-    IEnumerator SendNotice(string notice)
+    IEnumerator SendNotice(string notice, float seconds)
     {
         mediumNoticeBoardText.text = notice;
         mediumNoticeBoard.SetActive(true);
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(seconds);
         mediumNoticeBoard.SetActive(false);
     }
 
@@ -141,6 +162,116 @@ public class MenuManager : MonoBehaviour
         }
     }
 
+    public void OpenLoginPanelView()
+    {
+        loginAccountPanel.SetActive(true);
+    }
+
+    public void CloseLoginPanelView()
+    {
+        loginAccountPanel.SetActive(false);
+    }
+
+    public void OpenRegisterPanelView()
+    {
+        createAccountPanel.SetActive(true);
+    }
+
+    public void CloseRegisterPanelView()
+    {
+        createAccountPanel.SetActive(false);
+    }
+
+    public void SelectLoginAccount()
+    {
+        string usernameInput = loginUsernameInput.text;
+        string passwordInput = loginPasswordInput.text;
+
+        StartCoroutine(DjangoBackendAPI.Login(usernameInput, passwordInput, (success, response) =>
+        {
+            if(success)
+            {
+                Debug.Log("logged in successfully");
+                usernameLabel.text = usernameInput;
+                multiplayer.SetUsername(usernameInput);
+                CloseLoginPanelView();
+                SwitchToPanelView(selectModePanel);
+            }
+            else
+            {
+                if (!mediumNoticeBoard.activeSelf)
+                {
+                    StartCoroutine(SendNotice("Login failed.", 2f));
+                }
+            }
+        }));
+    }
+
+    public void SelectRegisterAccount()
+    {
+        string registerInput = registerUsernameInput.text;
+        string passwordInput = registerPasswordInput.text;
+
+        if(registerInput == "" || passwordInput == "")
+        {
+            if (!mediumNoticeBoard.activeSelf)
+            {
+                StartCoroutine(SendNotice("Please fill out both fields!", 2f));
+            }
+            return;
+        }
+
+        StartCoroutine(DjangoBackendAPI.RegisterUser(registerInput, passwordInput, (success, response) =>
+        {
+        if (success)
+            {
+                Debug.Log("registered successfully");
+
+                if (!mediumNoticeBoard.activeSelf)
+                {
+
+                    StartCoroutine(SendNotice("Created Account successfully! Please log in.", 1.5f));
+
+                }
+
+                //DjangoBackendAPI.Login(registerInput, passwordInput, (LoginSuccess, LoginResponse) =>
+                //{
+                //    Debug.Log("handling login..");
+                //    if (LoginSuccess)
+                //    {
+                //        multiplayer.SetUsername(registerInput);
+                //        usernameLabel.text = registerInput;
+                //        if (!mediumNoticeBoard.activeSelf)
+                //        {
+
+                //            StartCoroutine(SendNotice("Created Account successfully!", 2f));
+
+                //        }
+                //        SwitchToPanelView(selectModePanel);
+                //    }
+                //    else
+                //    {
+                //        if (!mediumNoticeBoard.activeSelf)
+                //        {
+                //            StartCoroutine(SendNotice("Account created, try to log in.",2f));
+                //        }
+                //    }
+                //    CloseRegisterPanelView();
+                //});
+            }
+            else
+            {
+                if (!mediumNoticeBoard.activeSelf)
+                {
+                    StartCoroutine(SendNotice("Error occured while creating account, please try again.", 2f));
+                }
+            }
+        }));
+
+        
+    }
+
+
     public void SwitchToPanelView( GameObject newPanel)
     {
         newPanel.SetActive(true);
@@ -154,12 +285,18 @@ public class MenuManager : MonoBehaviour
     {
         if (multiplayerPanel.activeSelf)
         {
-            List<string> boardNames = new List<string>();
-            app.GetBoardLayouts().ForEach(layout =>
+            StartCoroutine(app.GetBoardLayouts(layouts =>
             {
-                boardNames.Add(layout.Item1);
-            });
-            FillDropDown(boardLayoutDropdown, boardNames);
+                List<string> boardNames = new List<string>();
+                Debug.Log("boardlayouts:" + layouts.Count);
+
+                foreach (var layout in layouts)
+                {
+                    boardNames.Add(layout.Item1);
+                }
+
+                FillDropDown(boardLayoutDropdown, boardNames);
+            }));
         }
     }
 
@@ -182,7 +319,6 @@ public class MenuManager : MonoBehaviour
     {
         findRoomPanel.SetActive(false);
     }
-
     public void UpdateRoomPanelInformation(string roomName=null)
     {
         if (!roomPanel.activeSelf)

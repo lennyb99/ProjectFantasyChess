@@ -69,6 +69,16 @@ public class AppManager : MonoBehaviour
         selectedBoardLayout = bl;
     }
 
+    public string GetSerializedBoardLayoutData(BoardLayout bl)
+    {
+        if (bl != null)
+        {
+            return JsonConvert.SerializeObject(bl, serializerSettings);
+        }
+        Debug.Log("is null");
+        return null;
+    }
+
     public string GetCurrentSerializedBoardLayout()
     {
         if(selectedBoardLayout != null)
@@ -106,10 +116,44 @@ public class AppManager : MonoBehaviour
         return null;
     }
 
-    public List<(string,BoardLayout)> GetBoardLayouts()
+    public IEnumerator GetBoardLayouts(Action<List<(string, BoardLayout)>> onComplete)
     {
-        return boardLayouts;
+        List<(string, BoardLayout)> retrievedLayouts = null;
+        yield return StartCoroutine(GetBoardLayoutsFromDatabase(result =>
+        {
+            retrievedLayouts = result;
+        }));
+
+        Debug.Log("retrieved " + retrievedLayouts.Count + " layouts from database");
+        onComplete?.Invoke(retrievedLayouts);
     }
+
+    public IEnumerator GetBoardLayoutsFromDatabase(Action<List<(string, BoardLayout)>> onComplete)
+    {
+        yield return StartCoroutine(DjangoBackendAPI.GetBoards(multiplayerManager.GetUsername(), (success, response) =>
+        {
+            List<(string, BoardLayout)> boardLayoutsFromDatabase = new List<(string, BoardLayout)>();
+
+            if (success)
+            {
+                string[] jsonBoards = DjangoBackendAPI.SplitJsonObjects(response);
+                foreach (string j in jsonBoards)
+                {
+                    BoardResponse board = JsonUtility.FromJson<BoardResponse>(j);
+                    BoardLayout layout = JsonConvert.DeserializeObject<BoardLayout>(board.position_data, serializerSettings);
+                    boardLayoutsFromDatabase.Add((board.title, layout));
+                }
+            }
+            else
+            {
+                Debug.LogError(response.ToString());
+            }
+
+            onComplete?.Invoke(boardLayoutsFromDatabase);
+        }));
+    }
+
+
     private void JsonSerializerSettingInitialization()
     {
         serializerSettings = new JsonSerializerSettings();

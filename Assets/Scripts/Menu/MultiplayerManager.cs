@@ -16,7 +16,7 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
     public PhotonView roomPhotonView;
     public static MultiplayerManager Instance { get; private set; }
 
-
+    public bool loggedIn;
     private string userId;
 
     private void Awake()
@@ -35,6 +35,7 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     void Start()
     {
+        loggedIn = false;
         StartServerConnection();
     }
 
@@ -42,6 +43,17 @@ public class MultiplayerManager : MonoBehaviourPunCallbacks
     void Update()
     {
         
+    }
+
+    public void SetUsername(string username)
+    {
+        loggedIn = true;
+        PhotonNetwork.NickName = username;
+    }
+
+    public string GetUsername()
+    {
+        return PhotonNetwork.NickName;
     }
 
     public void StartServerConnection()

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -30,7 +31,7 @@ public class StartRoutine : MonoBehaviour
         //    if (success)
         //    {
 
-                
+
         //    }
         //}));
 
@@ -46,16 +47,29 @@ public class StartRoutine : MonoBehaviour
         //    Debug.Log("moin");
         //}));
 
-        StartCoroutine(DjangoBackendAPI.GetBoards("TestUser2", (success, response) =>
-        {
-            Debug.Log(response.ToString());
-        }));
+        //StartCoroutine(DjangoBackendAPI.GetBoards("lenny", (success, response) =>
+        //{
+        //    Debug.Log(response.ToString());
+        //}));
 
+        //StartCoroutine(DjangoBackendAPI.GetBoards("lenny", (success, response) =>
+        //{
+        //    if (success)
+        //    {
+        //        string[] jsonBoards = DjangoBackendAPI.SplitJsonObjects(response);
+        //        foreach(string j in jsonBoards){
+
+        //            BoardResponse board = JsonUtility.FromJson<BoardResponse>(j);
+        //            Debug.Log(board.title);
+        //            Debug.Log(board.position_data);
+        //        }
+
+        //    }
+        //    else
+        //    {
+        //        Debug.LogError(response.ToString());
+        //    }
+        //}));
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
