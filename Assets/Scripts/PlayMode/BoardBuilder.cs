@@ -106,7 +106,7 @@ public class BoardBuilder : MonoBehaviour
         }
         else
         {
-            return new Vector3(9 - file, 9 - rank, 0);
+            return new Vector3(50 - file, 50 - rank, 0);
         }
         
     }

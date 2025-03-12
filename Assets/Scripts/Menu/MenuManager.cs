@@ -105,6 +105,15 @@ public class MenuManager : MonoBehaviour
         multiplayer.CreateRoom(createRoomInput.text);
         SwitchToPanelView(roomPanel);
 
+        if(app.GetBoardLayout(boardLayoutDropdown.options[boardLayoutDropdown.value].text) == null)
+        {
+            Debug.Log("boardlayout is null!");
+        }
+        else
+        {
+            Debug.Log(app.GetBoardLayout(boardLayoutDropdown.options[boardLayoutDropdown.value].text));
+        }
+
         app.SelectBoardLayout(app.GetBoardLayout(boardLayoutDropdown.options[boardLayoutDropdown.value].text));
     }
 

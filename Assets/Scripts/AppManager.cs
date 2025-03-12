@@ -34,7 +34,7 @@ public class AppManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        boardLayouts.Add(("default",GenerateStandardChessBoardLayout()));
+        boardLayouts.Add(("default", GenerateStandardChessBoardLayout()));
         RegisterToMultiplayerManager();
 
         JsonSerializerSettingInitialization();
@@ -119,12 +119,22 @@ public class AppManager : MonoBehaviour
     public IEnumerator GetBoardLayouts(Action<List<(string, BoardLayout)>> onComplete)
     {
         List<(string, BoardLayout)> retrievedLayouts = null;
+        
         yield return StartCoroutine(GetBoardLayoutsFromDatabase(result =>
         {
             retrievedLayouts = result;
+            
         }));
-
         Debug.Log("retrieved " + retrievedLayouts.Count + " layouts from database");
+        retrievedLayouts.Insert(0,("default", GenerateStandardChessBoardLayout()));
+
+        boardLayouts.Clear();
+        foreach (var layout in retrievedLayouts)
+        {
+            boardLayouts.Add(layout);
+        }
+
+
         onComplete?.Invoke(retrievedLayouts);
     }
 

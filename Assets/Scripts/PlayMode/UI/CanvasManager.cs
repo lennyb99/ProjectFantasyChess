@@ -25,6 +25,12 @@ public class CanvasManager : MonoBehaviour
 
     public event Action OnPromotionSelected;
 
+    [Header("Result Panel")]
+    public GameObject resultPanel;
+    public GameObject whiteWonPanel;
+    public GameObject blackWonPanel;
+    public GameObject drawPanel;
+
 
     // Start is called before the first frame update
     void Start()
@@ -47,6 +53,41 @@ public class CanvasManager : MonoBehaviour
 
         // Event auslösen
         OnPromotionSelected?.Invoke();
+    }
+
+    /*
+     * 0 = draw
+     * 1 = win for white
+     * 2 = win for black
+     */
+    public void OpenResultPanel(int result)
+    {
+        if (result == 0)
+        {
+            drawPanel.SetActive(true);
+        }
+        else if (result == 1)
+        {
+            whiteWonPanel.SetActive(true);
+        }else if (result == 2)
+        {
+            blackWonPanel.SetActive(true);  
+        }
+        else
+        {
+            Debug.LogError("unvalid result. Please enter int 0,1 or 2");
+        }
+
+
+        resultPanel.SetActive(true);
+    }
+
+    public void CloseResultPanel()
+    {
+        drawPanel.SetActive(false);
+        whiteWonPanel.SetActive(false);
+        blackWonPanel.SetActive(false);
+        resultPanel.SetActive(false);
     }
 
     public void OpenPromotingPanel()

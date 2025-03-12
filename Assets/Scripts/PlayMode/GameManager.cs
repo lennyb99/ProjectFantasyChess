@@ -60,6 +60,13 @@ public class GameManager : MonoBehaviour
             return;
         }
 
+        // Makes sure, that player cannot move opponents pieces
+        if (!MovedOwnColorPiece(newMove))
+        {
+            newMove.movedPiece.ResetPhysicalPosition();
+            return;
+        }
+
         // Pre-check for checks. this checks if a move that is supposed to be made, would result in an opponent checking the king, therefore its illegal
         if (DoesMovePutOwnKingInCheck(newMove))
         {
@@ -104,7 +111,8 @@ public class GameManager : MonoBehaviour
             if (IsCheckmate(newMove))
             {
                 // Handle Checkmate
-                Debug.Log("CHECKMATE DETECTED");
+                Debug.LogWarning("CHECKMATE DETECTED");
+                HandleCheckmate(newMove);
             }
         }
 
@@ -151,8 +159,10 @@ public class GameManager : MonoBehaviour
             Debug.Log("Invalid Square information");
         }
 
-        ExecuteMoveOnBoard(new Move(psOrigin, psDestination, psOrigin.GetCurrentPiece()));
+        Move newMove = new Move(psOrigin, psDestination, psOrigin.GetCurrentPiece());
+        ExecuteMoveOnBoard(newMove);
 
+        RegisterMove(newMove);
 
         // If a promotion move was made
         if (moveInstruction.promotionMove)
@@ -190,6 +200,14 @@ public class GameManager : MonoBehaviour
             }
 
             ExecuteMoveOnBoard(rookMove);
+        }
+
+        // Check for Checkmate
+        if (IsCheckmate(newMove))
+        {
+            // Handle Checkmate
+            Debug.LogWarning("CHECKMATE DETECTED");
+            HandleCheckmate(newMove);
         }
     }
 
@@ -268,6 +286,18 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
+    private void HandleCheckmate(Move newMove)
+    {
+        if (newMove.movedPiece.isWhite)
+        {
+            canvas.OpenResultPanel(1);
+        }
+        else
+        {
+            canvas.OpenResultPanel(2);
+        }
+    }
+
     private bool DoesMovePreventCheckmate(Move simulatedMove)
     {
         return !DoesMovePutOwnKingInCheck(simulatedMove);
@@ -330,8 +360,6 @@ public class GameManager : MonoBehaviour
                     return true;
                 }
                 break;
-
-
         }
         return false;
     }
@@ -504,6 +532,16 @@ public class GameManager : MonoBehaviour
         {
             return false;
         }   
+    }
+
+    private bool MovedOwnColorPiece(Move newMove)
+    {
+        if(newMove.movedPiece.isWhite == GameData.GetBoardLayout().whitePov)
+        {
+            return true;
+        }
+        Debug.LogError("wrong color tried to move!");
+        return false;
     }
 
     private void ResetMoveInformation()
