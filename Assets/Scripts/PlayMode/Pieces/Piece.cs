@@ -100,6 +100,39 @@ public class Piece : MonoBehaviour
         transform.position = new Vector3(physicalPosition.position.x, physicalPosition.position.y, physicalPosition.position.z);
     }
 
+    public int GetPieceIdentifier()
+    {
+        int id = 0;
+        switch (pieceType)
+        {
+            case PieceType.king:
+                id = id + 10;
+                break;
+            case PieceType.queen:
+                id = id + 20;
+                break;
+            case PieceType.knight:
+                id = id + 30;
+                break;
+            case PieceType.rook:
+                id = id + 40;
+                break;
+            case PieceType.bishop:
+                id = id + 50;
+                break;
+            case PieceType.pawn:
+                id = id + 60;
+                break;
+        }
+
+        if(isWhite)
+        {
+            id = id + 1;
+        }
+
+        return id;
+    }
+
     public List<Move> GetAllPossibleMoves()
     {
         List<Move> possibleMoves = new List<Move>();

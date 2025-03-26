@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -19,6 +20,8 @@ public class GameManager : MonoBehaviour
     //public event Action OnPromotionPieceNameChanged;
 
     private TaskCompletionSource<bool> promotionTaskCompletionSource;
+
+    
 
     public void Start()
     {
@@ -61,11 +64,11 @@ public class GameManager : MonoBehaviour
         }
 
         // Makes sure, that player cannot move opponents pieces
-        if (!MovedOwnColorPiece(newMove))
-        {
-            newMove.movedPiece.ResetPhysicalPosition();
-            return;
-        }
+        //if (!MovedOwnColorPiece(newMove))
+        //{
+        //    newMove.movedPiece.ResetPhysicalPosition();
+        //    return;
+        //}
 
         // Pre-check for checks. this checks if a move that is supposed to be made, would result in an opponent checking the king, therefore its illegal
         if (DoesMovePutOwnKingInCheck(newMove))
@@ -82,9 +85,11 @@ public class GameManager : MonoBehaviour
             newMove.movedPiece.ResetPhysicalPosition();
             return;
         }
+
         
 
-        if (!CheckForPromotion(newMove)) { 
+        if (!CheckForPromotion(newMove)) {
+            IncrementFiftyMoveCounter();
             ExecuteMoveOnBoard(newMove);
         }
         else
@@ -114,6 +119,11 @@ public class GameManager : MonoBehaviour
                 Debug.LogWarning("CHECKMATE DETECTED");
                 HandleCheckmate(newMove);
             }
+        }
+
+        if (IsDraw(newMove))
+        {
+            HandleDraw(newMove);
         }
 
         // Sending move to other players
@@ -160,6 +170,8 @@ public class GameManager : MonoBehaviour
         }
 
         Move newMove = new Move(psOrigin, psDestination, psOrigin.GetCurrentPiece());
+
+        IncrementFiftyMoveCounter();
         ExecuteMoveOnBoard(newMove);
 
         RegisterMove(newMove);
@@ -209,6 +221,11 @@ public class GameManager : MonoBehaviour
             Debug.LogWarning("CHECKMATE DETECTED");
             HandleCheckmate(newMove);
         }
+        if (IsDraw(newMove))
+        {
+            HandleDraw(newMove);
+        }
+
     }
 
 
@@ -298,6 +315,67 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void IncrementFiftyMoveCounter()
+    {
+        GameBoardData.fiftyMoveRuleCounter++;
+    }
+
+    private bool IsDraw(Move newMove)
+    {
+        // Check for repetition
+        BoardPosition currentBoardPosition = GameBoardData.boardPositions[GameBoardData.boardPositions.Count - 1];
+
+        int counter = 0;
+        foreach (BoardPosition bP in GameBoardData.boardPositions)
+        {
+            if (currentBoardPosition.CompareBoardPosition(bP))
+            {
+                counter++;
+            }
+        }
+        if (counter >= 3)
+        {
+            return true;
+        }
+
+        // Check for 50 move rule
+        if (newMove.movedPiece.pieceType == PieceType.pawn)
+        {
+            GameBoardData.fiftyMoveRuleCounter = 0;
+        }
+        if( GameBoardData.fiftyMoveRuleCounter >= 50)
+        {
+            return true;
+        }
+
+        List<Move> possibleMoves = new List<Move>();
+
+        // Check if opponent has any legal moves on the board
+        foreach (GameObject pieceObj in GameBoardData.pieces)
+        {
+            if (pieceObj.GetComponent<Piece>().isWhite != newMove.movedPiece.isWhite)
+            {
+                possibleMoves.AddRange(pieceObj.GetComponent<Piece>().GetAllPossibleMoves());
+            }
+        }
+
+        foreach(Move move in possibleMoves)
+        {
+            if (DoesMovePutOwnKingInCheck(move) == false)
+            {
+                return false;
+            }
+        }
+        
+        
+        return true;
+    }
+
+    private void HandleDraw(Move newMove)
+    {
+        canvas.OpenResultPanel(0);
+    }
+
     private bool DoesMovePreventCheckmate(Move simulatedMove)
     {
         return !DoesMovePutOwnKingInCheck(simulatedMove);
@@ -305,6 +383,7 @@ public class GameManager : MonoBehaviour
 
     private void ExecuteMoveOnBoard(Move newMove)
     {
+        
         HandlePieceDeletion(newMove);
 
         // Reset memory of old square
@@ -370,6 +449,7 @@ public class GameManager : MonoBehaviour
         if (newMove.destinationSquare.GetCurrentPiece() != null)
         {
             GameBoardData.pieces.Remove(newMove.destinationSquare.GetCurrentPiece().gameObject);
+            GameBoardData.fiftyMoveRuleCounter = 0;
             Destroy(newMove.destinationSquare.GetCurrentPiece().gameObject);
         }
 
@@ -459,6 +539,7 @@ public class GameManager : MonoBehaviour
         }
 
         ExecuteMoveOnBoard(newMove);
+        GameBoardData.fiftyMoveRuleCounter = 0;
 
         GameObject piecePrefab = pieceHolder.GetPiece(promotionPieceName);
         if (piecePrefab == null)
@@ -553,6 +634,7 @@ public class GameManager : MonoBehaviour
     {
         GameBoardData.moves.Add(newMove);
         GameBoardData.whiteToMove = !GameBoardData.whiteToMove;
+        GameBoardData.boardPositions.Add(new BoardPosition());
     }
 
     public void LeaveGame()
@@ -620,36 +702,42 @@ public class MoveInstruction
 
 public class BoardPosition
 {
-    public List<Piece> pieces;
-    public List<PlaySquare> squares;
-
-    public BoardPosition(List<Piece> pieces, List<PlaySquare> squares)
+    // array of squares that a given boardlayout has. each square has a value for the piece that sits on it. Since the squares of the gameBoardData are not to be changed,
+    // they are supposed to remain in the same order
+    private int[] occupations;
+    private int pieceCount;
+    public BoardPosition()
     {
-        this.pieces = pieces;
-        this.squares = squares;
-    }
+        occupations = new int[GameBoardData.squares.Count-1];
+        pieceCount = GameBoardData.squares.Count;
 
-    public bool isWhiteKingInCheck()
-    {
-        Piece whiteKing = pieces.FirstOrDefault(obj => obj.pieceType == PieceType.king && obj.isWhite);
-        Debug.Log("no king detected");
-        foreach (Piece piece in pieces)
+        for (int i = 0; i < occupations.Length; i++)
         {
-            if (!piece.isWhite)
+            if (GameBoardData.squares[i].GetComponent<PlaySquare>().GetCurrentPiece() != null)
             {
-
+                occupations[i] = GameBoardData.squares[i].GetComponent<PlaySquare>().GetCurrentPiece().GetPieceIdentifier();
+            }
+            else
+            {
+                pieceCount -= 1;
             }
         }
-
-        return false;
     }
 
-    public bool isBlackKingInCheck()
+    // returns true if boardposition is the same
+    public bool CompareBoardPosition(BoardPosition other)
     {
-        Debug.Log("no king detected");
-        Piece blackKing = pieces.FirstOrDefault(obj => obj.pieceType == PieceType.king && !obj.isWhite);
-
-        return false;
+        if (pieceCount != other.pieceCount)
+        {
+            return false;
+        }
+        for (int i = 0; i < occupations.Length; i++)
+        {
+            if (occupations[i] != other.occupations[i])
+            {
+                return false;
+            }
+        }
+        return true;
     }
-
 }

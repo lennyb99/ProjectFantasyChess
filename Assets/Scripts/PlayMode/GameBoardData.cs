@@ -8,6 +8,10 @@ public static class GameBoardData
     public static List<GameObject> pieces;
     public static List<Move> moves = new List<Move>();
 
+    public static List<BoardPosition> boardPositions = new List<BoardPosition>();
+    public static int fiftyMoveRuleCounter;
+
+
     public static bool whiteToMove;
 
     public static int whitePawnBaseRank;
