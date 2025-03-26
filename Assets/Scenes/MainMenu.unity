@@ -2901,6 +2901,7 @@ GameObject:
   - component: {fileID: 399914025}
   - component: {fileID: 399914027}
   - component: {fileID: 399914026}
+  - component: {fileID: 399914028}
   m_Layer: 5
   m_Name: RegisterPanel
   m_TagString: Untagged
@@ -2972,6 +2973,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 399914024}
   m_CullTransparentMesh: 1
+--- !u!114 &399914028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 399914024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75294caa95771f9408b9251d1c74db75, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  firstInput: {fileID: 1171992081}
+  secondInput: {fileID: 492412902}
+  menuManager: {fileID: 479440690}
+  registerForm: 1
 --- !u!1 &423385479
 GameObject:
   m_ObjectHideFlags: 0
@@ -9056,6 +9073,7 @@ GameObject:
   - component: {fileID: 1296251132}
   - component: {fileID: 1296251134}
   - component: {fileID: 1296251133}
+  - component: {fileID: 1296251135}
   m_Layer: 5
   m_Name: Login Panel
   m_TagString: Untagged
@@ -9127,6 +9145,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1296251131}
   m_CullTransparentMesh: 1
+--- !u!114 &1296251135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1296251131}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75294caa95771f9408b9251d1c74db75, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  firstInput: {fileID: 1066914987}
+  secondInput: {fileID: 930851801}
+  menuManager: {fileID: 479440690}
+  registerForm: 0
 --- !u!1 &1307591256
 GameObject:
   m_ObjectHideFlags: 0
@@ -11837,7 +11871,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1877001017
 RectTransform:
   m_ObjectHideFlags: 0
@@ -12895,7 +12929,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2033727582
 RectTransform:
   m_ObjectHideFlags: 0

@@ -60,13 +60,15 @@ public class LoginRequest
 /// </summary>
 public static class DjangoBackendAPI
 {
-    // Passe diesen Basis-URL an deinen Server an (z.B. https://dein-server.de/ oder http://127.0.0.1:8000/)
-    private static readonly string baseUrl = "http://127.0.0.1:8000/";
+    private static readonly string baseUrl = "https://web-production-6785.up.railway.app/";
+    //private static readonly string baseUrl = "http://127.0.0.1:8000/";
 
     // Hier wird nach dem Login der Access Token gespeichert, 
     // sodass er für weitere API-Aufrufe gesetzt werden kann.
     private static string accessToken = "";
 
+    private static bool loginInProgress = false;
+    private static bool registerInProgress = false;
 
     /// <summary>
     /// Registriert einen Benutzer im Backend.
@@ -82,27 +84,28 @@ public static class DjangoBackendAPI
     /// 
     public static IEnumerator RegisterUser(string username, string password, Action<bool, string> onComplete)
     {
-        // Request-URL
+        if (registerInProgress)
+        {
+            Debug.Log("Registrierung läuft bereits.");
+            yield break;
+        }
+
+        registerInProgress = true;
+
         string url = $"{baseUrl}api/users/register/";
 
-        // JSON-Body erstellen
         RegisterRequest body = new RegisterRequest(username, password);
         string jsonData = JsonUtility.ToJson(body);
 
-
-        // UnityWebRequest für POST
         using (UnityWebRequest request = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST))
         {
             byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonData);
             request.uploadHandler = new UploadHandlerRaw(bodyRaw);
             request.downloadHandler = new DownloadHandlerBuffer();
-
             request.SetRequestHeader("Content-Type", "application/json");
 
-            // Request senden
             yield return request.SendWebRequest();
 
-            // Ergebnis prüfen
             if (request.result == UnityWebRequest.Result.Success)
             {
                 onComplete?.Invoke(true, request.downloadHandler.text);
@@ -112,6 +115,8 @@ public static class DjangoBackendAPI
                 onComplete?.Invoke(false, request.error);
             }
         }
+
+        registerInProgress = false;
     }
 
     /// <summary>
@@ -127,6 +132,14 @@ public static class DjangoBackendAPI
     /// </param>
     public static IEnumerator Login(string username, string password, Action<bool, string> onComplete)
     {
+        if (loginInProgress)
+        {
+            Debug.Log("Login already in progress.");
+            yield break;
+        }
+
+        loginInProgress = true;
+
         string url = $"{baseUrl}api/users/token/";
 
         LoginRequest body = new LoginRequest(username, password);
@@ -138,17 +151,12 @@ public static class DjangoBackendAPI
             request.uploadHandler = new UploadHandlerRaw(bodyRaw);
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
-
-
             request.redirectLimit = 0;
             request.useHttpContinue = false;
-
-            // Timeout kann sinnvoll sein
             request.timeout = 5;
 
-            yield return request.SendWebRequest();  // <-- Hier wartet die Coroutine, bis Antwort kommt
+            yield return request.SendWebRequest();
 
-            // Ab hier kannst du den Status auswerten, ohne erneut SendWebRequest() aufzurufen:
             if (request.result != UnityWebRequest.Result.Success)
             {
                 Debug.LogError($"Request failed: {request.error}");
@@ -156,7 +164,6 @@ public static class DjangoBackendAPI
             }
             else
             {
-                // Token aus dem JSON lesen
                 TokenResponse tokenResponse = JsonUtility.FromJson<TokenResponse>(request.downloadHandler.text);
 
                 if (!string.IsNullOrEmpty(tokenResponse.access))
@@ -170,6 +177,8 @@ public static class DjangoBackendAPI
                 }
             }
         }
+
+        loginInProgress = false;
     }
 
     /// <summary>
